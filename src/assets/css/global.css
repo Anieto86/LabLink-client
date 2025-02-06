@@ -17,8 +17,7 @@ body {
 
 @layer base {
   :root {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-      "Helvetica Neue", Arial, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     /* Light Mode */
     --background: 0 0% 95%;
     --foreground: 240 10% 3.9%;
@@ -99,6 +98,6 @@ body {
 }
 
 .btn-secondary:hover {
-  background-color: hsl(190, 85%, 45%);
+  background-color: hsl(70, 85%, 45%);
   color: hsl(240, 5%, 10%);
 }
