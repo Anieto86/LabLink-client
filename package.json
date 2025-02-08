@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "tsc": "npx --node-options=\"--max-old-space-size=8000\" tsc --noEmit",
     "knip": "knip",
-    "biome": "biome lint --diagnostic-level=error"
+    "biome": "biome lint --diagnostic-level=error",
+    "format": "biome format --write ."
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.1.2",
@@ -21,6 +22,7 @@
     "lucide-react": "^0.474.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-router-dom": "^7.1.5",
     "tailwind-merge": "^3.0.1",
     "tailwindcss-animate": "^1.0.7",
     "zustand": "^5.0.3"
@@ -37,9 +39,9 @@
     "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-react-refresh": "^0.4.18",
     "globals": "^15.14.0",
+    "knip": "^5.43.6",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
-    "knip": "^5.43.6",
     "typescript": "~5.7.2",
     "typescript-eslint": "^8.22.0",
     "vite": "^6.1.0"
