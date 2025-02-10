@@ -10,6 +10,11 @@ const Sidebar = () => {
           </Link>
         </li>
         <li className="mb-4">
+          <Link to="/innovation" className="hover:underline">
+            Innovation
+          </Link>
+        </li>
+        <li className="mb-4">
           <Link to="/profile" className=" hover:underline">
             Profile
           </Link>
