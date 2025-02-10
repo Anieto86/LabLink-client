@@ -2,6 +2,7 @@ import { Outlet } from 'react-router-dom'
 import { Column } from '../design/Grid'
 import Navbar from './navbar/Navbar'
 import Sidebar from '@/components/app/sidebar/Sidebar'
+import { Suspense } from 'react'
 
 const AuthenticatedLayout = () => {
   return (
@@ -10,7 +11,9 @@ const AuthenticatedLayout = () => {
       <Sidebar />
 
       <main>
-        <Outlet />
+        <Suspense fallback={<div>Loading...</div>}>
+          <Outlet />
+        </Suspense>
       </main>
     </Column>
   )
