@@ -10,7 +10,7 @@ import {
     createRoutesFromElements(
       <>
         <Route path="/">{authenticatedRoutes}</Route>
-        <Route path="/*">{guestRoutes}</Route>
+        {/* <Route path="/*">{guestRoutes}</Route> */}
       </>
     )
   )
