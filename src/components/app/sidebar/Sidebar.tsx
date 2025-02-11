@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 
 const Sidebar = () => {
   return (
-    <aside className="w-48 h-full bg-[#fafafa] dark:bg-[#0a0e1a] p-4 fixed left-0 top-0">
+    <aside className="w-48 h-full bg-[#fafafa] dark:bg-[#0a0e1a] p-4 fixed left-0 top-0 z-40">
       <ul>
         <li className="mb-4">
           <Link to="/dashboard" className="hover:underline">

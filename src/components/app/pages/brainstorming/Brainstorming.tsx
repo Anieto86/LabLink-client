@@ -1,133 +1,97 @@
-import { Column } from '@/components/design/Grid';
-import React, { useRef, useEffect, useState } from 'react';
+import { Column } from '@/components/design/Grid'
+import * as PIXI from 'pixi.js'
+import { useEffect, useRef, useState } from 'react'
 
 const Brainstorming = () => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [trianglePosition, setTrianglePosition] = useState<{ x: number; y: number } | null>(null);
-  const [isDragging, setIsDragging] = useState(false);
-  const [transform, setTransform] = useState({ x: 0, y: 0, scale: 1 });
+  const canvasRef = useRef<HTMLDivElement>(null)
+  const [nodes, setNodes] = useState<{ x: number; y: number }[]>([{ x: 400, y: 300 }])
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    const gl = canvas.getContext('webgl');
-    if (!gl) {
-      console.error('WebGL not supported');
-      return;
+    if (!canvasRef.current) {
+      console.error('Canvas ref is not attached')
+      return
     }
 
-    const vertexShaderSource = `
-      attribute vec2 a_position;
-      uniform vec2 u_translation;
-      uniform float u_scale;
-      void main() {
-        gl_Position = vec4((a_position + u_translation) * u_scale, 0, 1);
-      }
-    `;
+    const pixiApp = new PIXI.Application({
+      width: window.innerWidth,
+      height: window.innerHeight,
+      backgroundColor: 0xffffff,
+      resolution: window.devicePixelRatio || 1,
+      autoDensity: true
+    })
+    canvasRef.current.appendChild(pixiApp.view as HTMLCanvasElement)
 
-    const fragmentShaderSource = `
-      precision mediump float;
-      uniform vec4 u_color;
-      void main() {
-        gl_FragColor = u_color;
-      }
-    `;
+    const container = new PIXI.Container()
+    pixiApp.stage.addChild(container)
 
-    const createShader = (gl: WebGLRenderingContext, type: number, source: string) => {
-      const shader = gl.createShader(type)!;
-      gl.shaderSource(shader, source);
-      gl.compileShader(shader);
-      return shader;
-    };
+    // Add nodes
+    nodes.forEach(({ x, y }) => {
+      const circle = new PIXI.Graphics()
+      circle.beginFill(0xff0000)
+      circle.drawCircle(0, 0, 20)
+      circle.endFill()
+      circle.x = x
+      circle.y = y
+      container.addChild(circle)
+    })
 
-    const createProgram = () => {
-      const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
-      const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
-      const program = gl.createProgram()!;
-      gl.attachShader(program, vertexShader);
-      gl.attachShader(program, fragmentShader);
-      gl.linkProgram(program);
-      return program;
-    };
+    // Handle zoom & pan
+    let isDragging = false
+    let startPosition = { x: 0, y: 0 }
 
-    const drawTriangle = () => {
-      if (!trianglePosition) return;
-      gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-      gl.clearColor(1, 1, 1, 1);
-      gl.clear(gl.COLOR_BUFFER_BIT);
-      const program = createProgram();
-      gl.useProgram(program);
-
-      const positionLocation = gl.getAttribLocation(program, 'a_position');
-      const translationLocation = gl.getUniformLocation(program, 'u_translation');
-      const scaleLocation = gl.getUniformLocation(program, 'u_scale');
-      const colorLocation = gl.getUniformLocation(program, 'u_color');
-      gl.uniform4f(colorLocation, 1, 0, 0, 1);
-      gl.uniform2f(translationLocation, transform.x + trianglePosition.x, transform.y + trianglePosition.y);
-      gl.uniform1f(scaleLocation, transform.scale);
-
-      const buffer = gl.createBuffer();
-      gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-      const vertices = new Float32Array([
-        -0.5, -0.5,
-         0.5, -0.5,
-         0.0,  0.5
-      ]);
-      gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
-
-      gl.enableVertexAttribArray(positionLocation);
-      gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
-      gl.drawArrays(gl.TRIANGLES, 0, 3);
-    };
-
-    drawTriangle();
-  }, [trianglePosition, transform]);
-
-  const handleMouseDown = () => setIsDragging(true);
-  const handleMouseUp = () => setIsDragging(false);
-  const handleMouseMove = (event: MouseEvent) => {
-    if (isDragging && trianglePosition) {
-      setTrianglePosition(prev => prev ? {
-        x: prev.x + event.movementX / 250,
-        y: prev.y - event.movementY / 250,
-      } : prev);
+    const handleMouseDown = (event: MouseEvent) => {
+      isDragging = true
+      startPosition = { x: event.clientX, y: event.clientY }
     }
-  };
 
-  const handleWheel = (event: WheelEvent) => {
-    setTransform(prev => ({
-      ...prev,
-      scale: Math.max(0.1, prev.scale * (event.deltaY > 0 ? 0.9 : 1.1))
-    }));
-  };
+    const handleMouseUp = () => {
+      isDragging = false
+    }
 
-  const handleDrawTriangle = () => {
-    setTrianglePosition({ x: 0, y: 0 });
-  };
+    const handleMouseMove = (event: MouseEvent) => {
+      if (isDragging) {
+        container.x += event.clientX - startPosition.x
+        container.y += event.clientY - startPosition.y
+        startPosition = { x: event.clientX, y: event.clientY }
+      }
+    }
 
-  useEffect(() => {
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('mouseup', handleMouseUp);
-    window.addEventListener('wheel', handleWheel);
+    const handleWheel = (event: WheelEvent) => {
+      event.preventDefault()
+      const scaleFactor = event.deltaY > 0 ? 0.9 : 1.1
+      container.scale.set(container.scale.x * scaleFactor)
+    }
+
+    if (pixiApp.view instanceof HTMLCanvasElement) {
+      pixiApp.view.addEventListener('mousedown', handleMouseDown)
+      pixiApp.view.addEventListener('mouseup', handleMouseUp)
+      pixiApp.view.addEventListener('mousemove', handleMouseMove)
+      pixiApp.view.addEventListener('wheel', handleWheel)
+    }
+
     return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleMouseUp);
-      window.removeEventListener('wheel', handleWheel);
-    };
-  }, [isDragging]);
+      if (pixiApp.view instanceof HTMLCanvasElement) {
+        pixiApp.view.removeEventListener('mousedown', handleMouseDown)
+        pixiApp.view.removeEventListener('mouseup', handleMouseUp)
+        pixiApp.view.removeEventListener('mousemove', handleMouseMove)
+        pixiApp.view.removeEventListener('wheel', handleWheel)
+        pixiApp.destroy(true, { children: true, texture: true })
+      }
+    }
+  }, [nodes])
+
+  const handleAddNode = () => {
+    setNodes((prev) => [...prev, { x: Math.random() * window.innerWidth, y: Math.random() * window.innerHeight }])
+  }
 
   return (
-    <Column className='items-center' >
-      <button type="button" onClick={handleDrawTriangle}>Draw Triangle</button>
-      <canvas
-        ref={canvasRef}
-        style={{ width: '100%', height: '100%', display: 'block', border: '1px solid black' }}
-        onMouseDown={handleMouseDown}
-      />
+    <Column className="items-center fixed">
+      <button type="button" onClick={handleAddNode}>
+        Add Node
+      </button>
+      <div ref={canvasRef} style={{ width: '100%', height: '100%', display: 'block', border: '1px solid black' }} />
     </Column>
-  );
-};
+  )
+}
 
-export default Brainstorming;
+export default Brainstorming
