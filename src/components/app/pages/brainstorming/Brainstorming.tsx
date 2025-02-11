@@ -1,13 +1,17 @@
+import { Column } from '@/components/design/Grid';
 import React, { useRef, useEffect, useState } from 'react';
 
 const Brainstorming = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [trianglePosition, setTrianglePosition] = useState({ x: 0, y: 0 });
+  const [trianglePosition, setTrianglePosition] = useState<{ x: number; y: number } | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [transform, setTransform] = useState({ x: 0, y: 0, scale: 1 });
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
     const gl = canvas.getContext('webgl');
     if (!gl) {
       console.error('WebGL not supported');
@@ -17,8 +21,9 @@ const Brainstorming = () => {
     const vertexShaderSource = `
       attribute vec2 a_position;
       uniform vec2 u_translation;
+      uniform float u_scale;
       void main() {
-        gl_Position = vec4(a_position + u_translation, 0, 1);
+        gl_Position = vec4((a_position + u_translation) * u_scale, 0, 1);
       }
     `;
 
@@ -48,6 +53,7 @@ const Brainstorming = () => {
     };
 
     const drawTriangle = () => {
+      if (!trianglePosition) return;
       gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
       gl.clearColor(1, 1, 1, 1);
       gl.clear(gl.COLOR_BUFFER_BIT);
@@ -56,9 +62,11 @@ const Brainstorming = () => {
 
       const positionLocation = gl.getAttribLocation(program, 'a_position');
       const translationLocation = gl.getUniformLocation(program, 'u_translation');
+      const scaleLocation = gl.getUniformLocation(program, 'u_scale');
       const colorLocation = gl.getUniformLocation(program, 'u_color');
       gl.uniform4f(colorLocation, 1, 0, 0, 1);
-      gl.uniform2f(translationLocation, trianglePosition.x, trianglePosition.y);
+      gl.uniform2f(translationLocation, transform.x + trianglePosition.x, transform.y + trianglePosition.y);
+      gl.uniform1f(scaleLocation, transform.scale);
 
       const buffer = gl.createBuffer();
       gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
@@ -75,39 +83,50 @@ const Brainstorming = () => {
     };
 
     drawTriangle();
-  }, [trianglePosition]);
+  }, [trianglePosition, transform]);
 
   const handleMouseDown = () => setIsDragging(true);
   const handleMouseUp = () => setIsDragging(false);
   const handleMouseMove = (event: MouseEvent) => {
-    if (isDragging) {
-      setTrianglePosition(prev => ({
+    if (isDragging && trianglePosition) {
+      setTrianglePosition(prev => prev ? {
         x: prev.x + event.movementX / 250,
         y: prev.y - event.movementY / 250,
-      }));
+      } : prev);
     }
+  };
+
+  const handleWheel = (event: WheelEvent) => {
+    setTransform(prev => ({
+      ...prev,
+      scale: Math.max(0.1, prev.scale * (event.deltaY > 0 ? 0.9 : 1.1))
+    }));
+  };
+
+  const handleDrawTriangle = () => {
+    setTrianglePosition({ x: 0, y: 0 });
   };
 
   useEffect(() => {
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('mouseup', handleMouseUp);
+    window.addEventListener('wheel', handleWheel);
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
+      window.removeEventListener('wheel', handleWheel);
     };
   }, [isDragging]);
 
   return (
-    <div>
-      <button id="drawTriangle">Draw Triangle</button>
+    <Column className='items-center' >
+      <button type="button" onClick={handleDrawTriangle}>Draw Triangle</button>
       <canvas
         ref={canvasRef}
-        width={500}
-        height={500}
-        style={{ display: 'block', border: '1px solid black' }}
+        style={{ width: '100%', height: '100%', display: 'block', border: '1px solid black' }}
         onMouseDown={handleMouseDown}
       />
-    </div>
+    </Column>
   );
 };
 
