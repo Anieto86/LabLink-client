@@ -24,29 +24,31 @@ const DraggableNode: React.FC<{ controlsRef: React.MutableRefObject<any> }> = ({
 
   // Adjust box size dynamically
   useEffect(() => {
-    setBoxWidth(Math.max(30, nodeText.length * 3.6)) // Bigger width scaling
+    const lines = nodeText.split('\n')
+    const longestLine = lines.reduce((max, line) => (line.length > max ? line.length : max), 0)
+
+    setBoxWidth(Math.max(30, longestLine * 3.6)) // Bigger width scaling
   }, [nodeText])
 
   return (
     <group position={position}>
       {/* 🟩 Rounded Rectangle Shape */}
       <mesh>
-      <shapeGeometry
-  args={[
-    new THREE.Shape()
-      .moveTo(-boxWidth / 2, -10) // 🔹 New height start (-10 instead of -30)
-      .lineTo(boxWidth / 2, -10)
-      .quadraticCurveTo(boxWidth / 2 + 5, -10, boxWidth / 2 + 5, -5) // 🔹 Rounded corners scaled
-      .lineTo(boxWidth / 2 + 5, 5)
-      .quadraticCurveTo(boxWidth / 2 + 5, 10, boxWidth / 2, 10) // 🔹 Max height now 10
-      .lineTo(-boxWidth / 2, 10)
-      .quadraticCurveTo(-boxWidth / 2 - 5, 10, -boxWidth / 2 - 5, 5)
-      .lineTo(-boxWidth / 2 - 5, -5)
-      .quadraticCurveTo(-boxWidth / 2 - 5, -10, -boxWidth / 2, -10),
-    64
-  ]}
-/>
-
+        <shapeGeometry
+          args={[
+            new THREE.Shape()
+              .moveTo(-boxWidth / 2, -10)
+              .lineTo(boxWidth / 2, -10)
+              .quadraticCurveTo(boxWidth / 2 + 10, -10, boxWidth / 2 + 10, -5)
+              .lineTo(boxWidth / 2 + 10, 5)
+              .quadraticCurveTo(boxWidth / 2 + 10, 10, boxWidth / 2, 10)
+              .lineTo(-boxWidth / 2, 10)
+              .quadraticCurveTo(-boxWidth / 2 - 10, 10, -boxWidth / 2 - 10, 5)
+              .lineTo(-boxWidth / 2 - 10, -5)
+              .quadraticCurveTo(-boxWidth / 2 - 10, -10, -boxWidth / 2, -10),
+            64
+          ]}
+        />
 
         <meshStandardMaterial color="#ffffff" />
       </mesh>
@@ -72,8 +74,7 @@ const DraggableNode: React.FC<{ controlsRef: React.MutableRefObject<any> }> = ({
             resize: 'none',
             caretColor: 'black',
             transform: `scale(${1 / camera.zoom})`,
-            transformOrigin: 'center',
-            // paddingTop: '1200px'
+            transformOrigin: 'center'
           }}
         />
       </Html>
