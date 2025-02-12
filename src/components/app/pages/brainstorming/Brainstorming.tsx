@@ -50,8 +50,6 @@ const Brainstorming = () => {
       gridGraphics.beginFill(0xcccccc, 0.5);
 
       // Compute the visible area in world coordinates.
-      // Since container is panned/zoomed, the mapping from container's local
-      // coordinates to screen is: screen = container.scale * world + container.position.
       const scale = container.scale.x; // assuming uniform scale (x === y)
       const visibleLeft = -container.x / scale;
       const visibleTop = -container.y / scale;
@@ -65,7 +63,6 @@ const Brainstorming = () => {
       // Draw dots for each grid cell in the visible region.
       for (let x = startX; x <= visibleRight; x += dotSpacing) {
         for (let y = startY; y <= visibleBottom; y += dotSpacing) {
-          // Place the dot in the center of the grid cell.
           gridGraphics.drawCircle(x + dotSpacing / 2, y + dotSpacing / 2, dotSize);
         }
       }
@@ -92,6 +89,11 @@ const Brainstorming = () => {
     // 6. Set up panning and zooming for the container.
     //    The grid is redrawn after each update so it scales and repositions correctly.
     // ----------------------------------------------------------------
+
+    // Define minimum and maximum allowed scale values.
+    const minScale = .4; // Adjust as needed
+    const maxScale = 3;   // Adjust as needed
+
     let isDragging = false;
     let dragStart = { x: 0, y: 0 };
     let containerStart = { x: 0, y: 0 };
@@ -121,11 +123,15 @@ const Brainstorming = () => {
       const worldX = (mouseX - container.x) / container.scale.x;
       const worldY = (mouseY - container.y) / container.scale.y;
 
-      // Apply zoom.
-      container.scale.set(container.scale.x * scaleFactor);
-      // Adjust container position so the zoom centers on the mouse pointer.
-      container.x = mouseX - worldX * container.scale.x;
-      container.y = mouseY - worldY * container.scale.y;
+      // Calculate the new scale and clamp it.
+      let newScale = container.scale.x * scaleFactor;
+      newScale = Math.max(minScale, Math.min(maxScale, newScale));
+
+      // Apply the new scale.
+      container.scale.set(newScale);
+      // Adjust container position so that the zoom is centered under the mouse.
+      container.x = mouseX - worldX * newScale;
+      container.y = mouseY - worldY * newScale;
       updateGrid();
     });
 
