@@ -23,11 +23,9 @@ const GridBackground = () => (
 
 /**
  * DraggableNode  
- * Renders an ellipse with centered text.  
- * – On pointer down, we record the initial pointer (screen) position and the node’s world position.  
- * – On pointer move, we update the node’s position using a ray–plane intersection (the XY plane).  
- * – On pointer up, if the pointer hasn’t moved beyond a small threshold, we switch into inline editing mode.
- * The ellipse’s geometry is recomputed based on the current text so that it enlarges when more text is added.
+ * Renders an ellipse with centered text that can be click‑and‑dragged.
+ * A click (without dragging) puts the node into inline editing mode.
+ * While editing, the ellipse resizes in real time, but it never shrinks below its initial size.
  */
 interface DraggableNodeProps {
   controlsRef: React.MutableRefObject<any>;
@@ -35,40 +33,37 @@ interface DraggableNodeProps {
 
 const DraggableNode: React.FC<DraggableNodeProps> = ({ controlsRef }) => {
   const { camera } = useThree();
-  // Node's world position (starts at the origin)
+  // The node’s world position (starts at [0,0,0])
   const [position, setPosition] = useState<THREE.Vector3>(new THREE.Vector3(0, 0, 0));
-  // The node's text
+  // The node’s text
   const [nodeText, setNodeText] = useState("Click to edit");
-  // Editing state: if true, the text becomes inline-editable
+  // Editing state
   const [editing, setEditing] = useState(false);
+  // When editing begins, we record the current ellipse width so that it never shrinks
+  const [editingMinWidth, setEditingMinWidth] = useState<number>(100);
 
-  // For dragging: we'll use a ray–plane intersection with the XY plane (z = 0)
+  // For dragging: we use a ray–plane intersection with the XY plane (z = 0)
   const plane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
   const startDragPoint = useRef(new THREE.Vector3());
   const initialNodePos = useRef(new THREE.Vector3());
   const dragging = useRef(false);
-  // To determine if the pointer moved significantly (versus a click)
+  // Record pointer-down screen coordinates to distinguish a click from a drag
   const pointerDownPos = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
 
   const handlePointerDown = (e: any) => {
-    if (editing) return; // If already editing, ignore drag events.
+    if (editing) return; // Ignore drag events during editing
     e.stopPropagation();
     dragging.current = true;
-    // Record pointer-down screen position
     pointerDownPos.current = { x: e.clientX, y: e.clientY };
-    // Capture pointer events (so you keep receiving events even if the pointer leaves the node)
     if (e.target.setPointerCapture) {
       e.target.setPointerCapture(e.pointerId);
     }
-    // Disable OrbitControls during node drag
     if (controlsRef.current) {
       controlsRef.current.enabled = false;
     }
-    // Compute the intersection of the pointer ray with the XY plane
     if (e.ray) {
       e.ray.intersectPlane(plane, startDragPoint.current);
     }
-    // Save the node's initial position
     initialNodePos.current.copy(position);
   };
 
@@ -78,10 +73,9 @@ const DraggableNode: React.FC<DraggableNodeProps> = ({ controlsRef }) => {
     const currentIntersection = new THREE.Vector3();
     if (e.ray) {
       e.ray.intersectPlane(plane, currentIntersection);
-      // Calculate the delta from the initial intersection point
       const delta = new THREE.Vector3().subVectors(currentIntersection, startDragPoint.current);
       const newPos = new THREE.Vector3().copy(initialNodePos.current).add(delta);
-      newPos.z = 0; // Constrain movement to the XY plane
+      newPos.z = 0;
       setPosition(newPos);
     }
   };
@@ -95,28 +89,33 @@ const DraggableNode: React.FC<DraggableNodeProps> = ({ controlsRef }) => {
     if (controlsRef.current) {
       controlsRef.current.enabled = true;
     }
-    // Determine if the pointer moved only a tiny bit (i.e. it was a click, not a drag)
+    // If the pointer moved only a tiny bit, treat it as a click
     const dx = e.clientX - pointerDownPos.current.x;
     const dy = e.clientY - pointerDownPos.current.y;
     const dist = Math.sqrt(dx * dx + dy * dy);
     const threshold = 5; // pixels
     if (dist < threshold) {
-      // If it was a click, enter editing mode
+      // On click, store the current computed width as the minimum width for editing
+      const minWidth = 100;
+      const currentWidth = Math.max(minWidth, nodeText.length * 8);
+      setEditingMinWidth(currentWidth);
       setEditing(true);
     }
   };
 
-  // Compute a dynamic ellipse shape based on the text length.
-  // (For simplicity, we assume a fixed height and use text length * 8 as an approximation for width.)
+  // Compute a dynamic ellipse shape based on the text.
+  // When editing, the width will never go below editingMinWidth.
   const ellipse = useMemo(() => {
-    const minWidth = 100,
-          minHeight = 60;
-    const computedWidth = Math.max(minWidth, nodeText.length * 8);
-    const computedHeight = minHeight; // You could enhance this for multiline text.
+    const minWidth = 100;
+    const minHeight = 60;
+    const computedWidth = editing
+      ? Math.max(editingMinWidth, nodeText.length * 8)
+      : Math.max(minWidth, nodeText.length * 8);
+    const computedHeight = minHeight;
     const shape = new THREE.Shape();
     shape.absellipse(0, 0, computedWidth / 2, computedHeight / 2, 0, Math.PI * 2, false, 0);
     return shape;
-  }, [nodeText]);
+  }, [nodeText, editing, editingMinWidth]);
 
   return (
     <group
@@ -130,36 +129,40 @@ const DraggableNode: React.FC<DraggableNodeProps> = ({ controlsRef }) => {
         <shapeGeometry args={[ellipse, 64]} />
         <meshStandardMaterial color="#ffffff" />
       </mesh>
-      {/* Show the text if not in editing mode */}
+      {/* Show the text if not editing */}
       {!editing && (
         <Text position={[0, 0, 0.1]} fontSize={16} color="#000000" anchorX="center" anchorY="middle">
           {nodeText}
         </Text>
       )}
-      {/* When editing, render an inline contentEditable element using Drei’s Html */}
+      {/* When editing, render an inline contentEditable element via Drei’s Html */}
       {editing && (
         <Html center>
           <div
             contentEditable
             style={{
               fontSize: '16px',
-              padding: '4px',
+              width: `${Math.max(editingMinWidth, nodeText.length * 8)}px`,
+              textAlign: 'center',
               background: 'transparent',
               border: 'none',
               outline: 'none',
               color: '#000000',
-              textAlign: 'center',
+              // Keep the same padding as in non-edit mode (if desired)
+              padding: '4px',
             }}
             suppressContentEditableWarning={true}
+            onInput={(e) => {
+              // Update text live as the user types so that the ellipse resizes in real time
+              setNodeText(e.currentTarget.innerText);
+            }}
             onBlur={(e) => {
-              // Update the node text and exit editing mode when focus is lost
               setNodeText(e.currentTarget.innerText);
               setEditing(false);
             }}
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
                 e.preventDefault();
-                // Exit editing mode when Enter is pressed
                 e.currentTarget.blur();
               }
             }}
@@ -177,7 +180,6 @@ const DraggableNode: React.FC<DraggableNodeProps> = ({ controlsRef }) => {
  * Contains the grid background, the draggable node, lights, and OrbitControls.
  */
 const Scene = () => {
-  // Create a ref for OrbitControls so we can disable/enable it during node dragging.
   const controlsRef = useRef<any>(null);
   return (
     <>
