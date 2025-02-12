@@ -2,10 +2,9 @@ import * as PIXI from 'pixi.js';
 
 export function createTextNode(initialText = "…", x = 200, y = 200) {
   const container = new PIXI.Container();
-  container.x = x;
-  container.y = y;
-  // Use 'auto' eventMode so that pointer events fire.
-  container.eventMode = 'auto';
+  container.x = Math.round(x);
+  container.y = Math.round(y);
+  container.eventMode = 'auto'; // 'auto' so pointer events fire
 
   // Create the PIXI text display.
   const textStyle = new PIXI.TextStyle({
@@ -17,9 +16,10 @@ export function createTextNode(initialText = "…", x = 200, y = 200) {
   });
   const textDisplay = new PIXI.Text(initialText, textStyle);
   textDisplay.anchor.set(0.5);
+  textDisplay.roundPixels = true; // Ensures the text is rendered on whole pixels.
   container.addChild(textDisplay);
 
-  // Create a background shape for better visibility.
+  // Create background shape for better visibility.
   const background = new PIXI.Graphics();
   function updateBackground() {
     background.clear();
@@ -37,7 +37,7 @@ export function createTextNode(initialText = "…", x = 200, y = 200) {
   updateBackground();
   container.addChildAt(background, 0);
 
-  // Create an HTML input element for inline editing.
+  // Create an HTML input element for in-place editing.
   const input = document.createElement('input');
   input.type = 'text';
   input.value = textDisplay.text;
@@ -52,16 +52,13 @@ export function createTextNode(initialText = "…", x = 200, y = 200) {
   input.style.zIndex = '10000';
   document.body.appendChild(input);
 
-  // Function to position the input element exactly over the text node.
   function positionInput() {
-    // Get the global position of the container.
+    // Use container.toGlobal to determine its position on screen.
     const globalPos = container.toGlobal(new PIXI.Point(0, 0));
-    // Find the canvas element.
     const canvas = document.querySelector('canvas');
     if (!canvas) return;
     const canvasRect = canvas.getBoundingClientRect();
-    // Calculate absolute position:
-    // Since textDisplay.anchor is (0.5, 0.5), subtract half its width/height.
+    // Adjust for the centered anchor and a 5px margin.
     const left = canvasRect.left + globalPos.x - textDisplay.width / 2 - 5;
     const top = canvasRect.top + globalPos.y - textDisplay.height / 2 - 5;
     input.style.left = `${left}px`;
@@ -70,28 +67,20 @@ export function createTextNode(initialText = "…", x = 200, y = 200) {
     input.style.height = `${textDisplay.height + 10}px`;
   }
 
-  // When the container is clicked, show the input for editing.
   container.on('pointerdown', () => {
-    // (For debugging, you can log here.)
-    // Hide the PIXI text (or you may choose to leave it visible).
-    textDisplay.visible = false;
     input.value = textDisplay.text;
     input.style.display = 'block';
     positionInput();
-    // Use a small timeout to ensure rendering, then focus.
     setTimeout(() => input.focus(), 0);
   });
 
-  // As the user types, update the PIXI text and background.
   input.addEventListener('input', () => {
     textDisplay.text = input.value;
     updateBackground();
   });
 
-  // When editing is finished, hide the input and show the PIXI text.
   input.addEventListener('blur', () => {
     input.style.display = 'none';
-    textDisplay.visible = true;
   });
 
   return container;
