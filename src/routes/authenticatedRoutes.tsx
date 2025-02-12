@@ -1,4 +1,5 @@
 import AuthenticatedLayout from '@/components/app/AuthenticatedLayout'
+import MindMappingLayout from '@/components/app/MindMappingLayout'
 import { lazy } from 'react'
 import { Navigate, Route } from 'react-router-dom'
 
@@ -8,11 +9,17 @@ const Settings = lazy(() => import('@/components/app/settings/Settings'))
 const Innovation = lazy(() => import('@/components/app/innovation/Innovation'))
 
 export const authenticatedRoutes = (
-  <Route element={<AuthenticatedLayout />}>
-    <Route index element={<Navigate to="/dashboard" replace />} />
-    <Route path="dashboard" element={<Dashboard />} />
-    <Route path="innovation" element={<Innovation />} />
-    <Route path="profile" element={<Profile />} />
-    <Route path="settings" element={<Settings />} />
-  </Route>
+  <>
+    <Route element={<MindMappingLayout />}>
+      <Route path="brainstorming" element={<Brainstorming />} />
+    </Route>
+    <Route element={<AuthenticatedLayout />}>
+      <Route index element={<Navigate to="/dashboard" replace />} />
+      <Route path="dashboard" element={<Dashboard />} />
+      <Route path="innovation" element={<Innovation />} />
+
+      <Route path="profile" element={<Profile />} />
+      <Route path="settings" element={<Settings />} />
+    </Route>
+  </>
 )
