@@ -20,13 +20,14 @@ const DraggableNode: React.FC<{ controlsRef: React.MutableRefObject<any> }> = ({
   const [position, setPosition] = useState(new THREE.Vector3(0, 0, 0))
   const [nodeText, setNodeText] = useState('Click to edit')
   const [boxWidth, setBoxWidth] = useState(0)
+  const [boxHeight, setBoxHeight] = useState(10)
   const textAreaRef = useRef<HTMLTextAreaElement>(null)
 
   // Adjust box size dynamically
   useEffect(() => {
     const lines = nodeText.split('\n')
     const longestLine = lines.reduce((max, line) => (line.length > max ? line.length : max), 0)
-
+    setBoxHeight(Math.max(20, lines.length * 14))
     setBoxWidth(Math.max(30, longestLine * 3.6)) // Bigger width scaling
   }, [nodeText])
 
@@ -37,15 +38,15 @@ const DraggableNode: React.FC<{ controlsRef: React.MutableRefObject<any> }> = ({
         <shapeGeometry
           args={[
             new THREE.Shape()
-              .moveTo(-boxWidth / 2, -10)
-              .lineTo(boxWidth / 2, -10)
-              .quadraticCurveTo(boxWidth / 2 + 10, -10, boxWidth / 2 + 10, -5)
-              .lineTo(boxWidth / 2 + 10, 5)
-              .quadraticCurveTo(boxWidth / 2 + 10, 10, boxWidth / 2, 10)
-              .lineTo(-boxWidth / 2, 10)
-              .quadraticCurveTo(-boxWidth / 2 - 10, 10, -boxWidth / 2 - 10, 5)
-              .lineTo(-boxWidth / 2 - 10, -5)
-              .quadraticCurveTo(-boxWidth / 2 - 10, -10, -boxWidth / 2, -10),
+              .moveTo(-boxWidth / 2, -boxHeight / 2)
+              .lineTo(boxWidth / 2, -boxHeight / 2)
+              .quadraticCurveTo(boxWidth / 2 + 10, -boxHeight / 2, boxWidth / 2 + 10, -boxHeight / 2 + 5)
+              .lineTo(boxWidth / 2 + 10, boxHeight / 2 - 5)
+              .quadraticCurveTo(boxWidth / 2 + 10, boxHeight / 2, boxWidth / 2, boxHeight / 2)
+              .lineTo(-boxWidth / 2, boxHeight / 2)
+              .quadraticCurveTo(-boxWidth / 2 - 10, boxHeight / 2, -boxWidth / 2 - 10, boxHeight / 2 - 5)
+              .lineTo(-boxWidth / 2 - 10, -boxHeight / 2 + 5)
+              .quadraticCurveTo(-boxWidth / 2 - 10, -boxHeight / 2, -boxWidth / 2, -boxHeight / 2),
             64
           ]}
         />
@@ -63,9 +64,9 @@ const DraggableNode: React.FC<{ controlsRef: React.MutableRefObject<any> }> = ({
             fontSize: `${300 * camera.zoom}px`, // BIGGER TEXT SIZE
             fontWeight: 'bold',
             width: `${boxWidth * 1000}px`,
-            height: 'auto',
+            height: `${boxHeight * 100}px`,
             textAlign: 'center',
-            whiteSpace: 'nowrap',
+            whiteSpace: 'pre-wrap',
             background: 'transparent',
             border: 'none',
             outline: 'none',
