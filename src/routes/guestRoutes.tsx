@@ -3,9 +3,9 @@ import { Route, Outlet } from 'react-router-dom'
 
 // Lazy-loaded components for guest routes
 const GuestLayout = lazy(() => import('@/components/guest/GuestLayout'))
-const LoginPage = lazy(() => import('@/components/guest/loginPage/LoginPage'))
-const SignUp = lazy(() => import('@/components/guest/signUp/SignUp'))
-const ResetPassword = lazy(() => import('@/components/guest/resetPassword/ResetPassword'))
+const LoginPage = lazy(() => import('@/components/guest/pages/loginPage/LoginPage'))
+const SignUp = lazy(() => import('@/components/guest/pages/signUp/SignUp'))
+const ResetPassword = lazy(() => import('@/components/guest/pages/resetPassword/ResetPassword'))
 
 export const guestRoutes = (
   <Route element={<GuestLayout />}>
