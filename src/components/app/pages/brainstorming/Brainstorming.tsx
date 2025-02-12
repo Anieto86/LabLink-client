@@ -1,6 +1,6 @@
 import { Column } from '@/components/design/Grid'
-import React, { useRef, useEffect, useState } from 'react'
 import * as PIXI from 'pixi.js'
+import { useEffect, useRef, useState } from 'react'
 
 const Brainstorming = () => {
   const canvasRef = useRef<HTMLDivElement>(null)
@@ -10,8 +10,8 @@ const Brainstorming = () => {
   useEffect(() => {
     if (!canvasRef.current) return
 
-    // Create the PIXI application.
-    const app = new PIXI.Application({
+    // Create the PIXI application with the view typed as HTMLCanvasElement.
+    const app = new PIXI.Application<HTMLCanvasElement>({
       width: window.innerWidth,
       height: window.innerHeight,
       backgroundColor: 0xffffff,
@@ -46,7 +46,7 @@ const Brainstorming = () => {
     //      (The major grid lines will be drawn every groupFactor * minorSpacing.)
     // ----------------------------------------------------------------
     const minorSpacing = 100 // Adjust this to change the size of the small squares.
-    const groupFactor = 5 // Every 5 minor cells, draw a thicker major line.
+    const groupFactor = 5    // Every 5 minor cells, draw a thicker major line.
     const majorSpacing = minorSpacing * groupFactor
 
     // ----------------------------------------------------------------
@@ -122,26 +122,30 @@ const Brainstorming = () => {
     let dragStart = { x: 0, y: 0 }
     let containerStart = { x: 0, y: 0 }
 
-    app.view.addEventListener('mousedown', (e: MouseEvent) => {
+    app.view!.addEventListener('mousedown', (e: Event) => {
+      const me = e as MouseEvent
       isDragging = true
-      dragStart = { x: e.clientX, y: e.clientY }
+      dragStart = { x: me.clientX, y: me.clientY }
       containerStart = { x: container.x, y: container.y }
     })
-    app.view.addEventListener('mouseup', () => {
+    app.view!.addEventListener('mouseup', () => {
       isDragging = false
     })
-    app.view.addEventListener('mousemove', (e: MouseEvent) => {
+    app.view!.addEventListener('mousemove', (e: Event) => {
       if (!isDragging) return
-      container.x = containerStart.x + (e.clientX - dragStart.x)
-      container.y = containerStart.y + (e.clientY - dragStart.y)
+      const me = e as MouseEvent
+      container.x = containerStart.x + (me.clientX - dragStart.x)
+      container.y = containerStart.y + (me.clientY - dragStart.y)
       updateGrid()
     })
-    app.view.addEventListener('wheel', (e: WheelEvent) => {
+    app.view!.addEventListener('wheel', (e: Event) => {
       e.preventDefault()
-      const scaleFactor = e.deltaY > 0 ? 0.9 : 1.1
-      const rect = app.view.getBoundingClientRect()
-      const mouseX = e.clientX - rect.left
-      const mouseY = e.clientY - rect.top
+      const me = e as WheelEvent
+      const scaleFactor = me.deltaY > 0 ? 0.9 : 1.1
+      // Use non-null assertion on getBoundingClientRect() since app.view is attached.
+      const rect = (app.view as HTMLCanvasElement).getBoundingClientRect()
+      const mouseX = me.clientX - rect.left
+      const mouseY = me.clientY - rect.top
       // Compute the world coordinate under the mouse before zoom.
       const worldX = (mouseX - container.x) / container.scale.x
       const worldY = (mouseY - container.y) / container.scale.y
@@ -174,7 +178,7 @@ const Brainstorming = () => {
 
   return (
     <Column className="items-center fixed">
-      <button onClick={handleAddNode}>Add Node</button>
+      <button type="button" onClick={handleAddNode}>Add Node</button>
       <div
         ref={canvasRef}
         style={{
