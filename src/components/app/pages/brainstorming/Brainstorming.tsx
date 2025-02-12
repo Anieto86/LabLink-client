@@ -52,8 +52,8 @@ const Brainstorming = () => {
     // ----------------------------------------------------------------
     // 5. Update grid function:
     //    Computes the visible area in world coordinates and draws both minor
-    //    and major grid lines. Minor grid lines are drawn with a thin 1px stroke,
-    //    while major grid lines use a 2px stroke.
+    //    and major grid lines.
+    //    We adjust the line thickness so that it remains constant in screen space.
     // ----------------------------------------------------------------
     const updateGrid = () => {
       gridGraphics.clear()
@@ -65,8 +65,10 @@ const Brainstorming = () => {
       const visibleRight = visibleLeft + window.innerWidth / scale
       const visibleBottom = visibleTop + window.innerHeight / scale
 
-      // --- Draw minor grid lines (thin) ---
-      gridGraphics.lineStyle(1, 0xeeeeee, 1)
+      // --- Draw minor grid lines (desired 1px thickness on screen) ---
+      const desiredMinorThickness = 1 // in screen pixels
+      const minorThickness = desiredMinorThickness / scale
+      gridGraphics.lineStyle(minorThickness, 0xeeeeee, 1)
       const startX_minor = Math.floor(visibleLeft / minorSpacing) * minorSpacing
       const startY_minor = Math.floor(visibleTop / minorSpacing) * minorSpacing
       for (let x = startX_minor; x <= visibleRight; x += minorSpacing) {
@@ -78,8 +80,10 @@ const Brainstorming = () => {
         gridGraphics.lineTo(visibleRight, y)
       }
 
-      // --- Draw major grid lines (thicker) ---
-      gridGraphics.lineStyle(2, 0xcccccc, 1) // 2px stroke (roughly 1px thicker than minor)
+      // --- Draw major grid lines (desired 2px thickness on screen) ---
+      const desiredMajorThickness = 2 // in screen pixels
+      const majorThickness = desiredMajorThickness / scale
+      gridGraphics.lineStyle(majorThickness, 0xcccccc, 1)
       const startX_major = Math.floor(visibleLeft / majorSpacing) * majorSpacing
       const startY_major = Math.floor(visibleTop / majorSpacing) * majorSpacing
       for (let x = startX_major; x <= visibleRight; x += majorSpacing) {
@@ -112,7 +116,7 @@ const Brainstorming = () => {
     // 7. Set up panning and zooming.
     //    (After each update, call updateGrid() so the grid redraws correctly.)
     // ----------------------------------------------------------------
-    const minScale = 0.4
+    const minScale = 0.2
     const maxScale = 3
     let isDragging = false
     let dragStart = { x: 0, y: 0 }
