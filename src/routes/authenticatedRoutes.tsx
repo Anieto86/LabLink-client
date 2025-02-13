@@ -7,12 +7,12 @@ const Dashboard = lazy(() => import('@/components/app/pages/dashboard/Dashboard'
 const Profile = lazy(() => import('@/components/app/pages/profile/Profile'))
 const Settings = lazy(() => import('@/components/app/pages/settings/Settings'))
 const Innovation = lazy(() => import('@/components/app/pages/innovation/Innovation'))
-const Brainstorming = lazy(() => import('@/components/app/pages/brainstorming/Brainstorming'))
+const MindMap = lazy(() => import('@/components/app/pages/mind-map/MindMap'))
 
 export const authenticatedRoutes = (
   <>
     <Route element={<MindMappingLayout />}>
-      <Route path="brainstorming" element={<Brainstorming />} />
+      <Route path="brainstorming" element={<MindMap />} />
     </Route>
     <Route element={<AuthenticatedLayout />}>
       <Route index element={<Navigate to="/dashboard" replace />} />
