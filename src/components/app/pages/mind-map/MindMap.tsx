@@ -18,7 +18,7 @@ export default function Brainstorming() {
   const svgRef = useRef<SVGSVGElement | null>(null);
 
   useEffect(() => {
-    // Clear any previous SVG content.
+    // Clear previous SVG content.
     const svg = d3.select(svgRef.current);
     svg.selectAll("*").remove();
 
@@ -28,10 +28,10 @@ export default function Brainstorming() {
        .style("border", "1px solid #ccc")
        .style("background", "#fafafa");
 
-    // Append a main group for zooming/panning.
+    // Append main group for pan/zoom.
     const g = svg.append("g");
 
-    // Add zoom behavior.
+    // Set up zoom behavior.
     const zoomBehavior = d3.zoom<SVGSVGElement, unknown>()
       .scaleExtent([0.1, 10])
       .on("zoom", (event) => {
@@ -39,7 +39,7 @@ export default function Brainstorming() {
       });
     svg.call(zoomBehavior);
 
-    // Define your nodes and links.
+    // Define nodes and links.
     const nodes: NodeDatum[] = [
       { id: "Central Idea", label: "Central Idea", group: 1 },
       { id: "Idea 1", label: "Idea 1", group: 2 },
@@ -57,7 +57,7 @@ export default function Brainstorming() {
       { source: "Idea 2", target: "Sub Idea 2" }
     ];
 
-    // Create a force simulation.
+    // Create the simulation.
     const simulation = d3.forceSimulation(nodes)
       .force("link", d3.forceLink(links)
                         .id((d: any) => d.id)
@@ -81,98 +81,109 @@ export default function Brainstorming() {
       .join("g")
       .call(drag(simulation));
 
-    // Append a rounded rectangle for each node.
+    // Append a rounded rectangle.
     nodeSelection.append("rect")
       .attr("rx", 10)
       .attr("ry", 10)
       .attr("fill", d => d3.schemeCategory10[d.group % 10]);
 
-    // Append text for each node.
+    // Append a text element that will show multiple lines.
     nodeSelection.append("text")
-      .text(d => d.label)
       .attr("text-anchor", "middle")
-      .attr("dy", ".35em")
+      .attr("xml:space", "preserve")
       .style("pointer-events", "all")
       .style("cursor", "pointer")
-      .on("dblclick", function(event, d) {
-        // Prevent zoom interference.
-        event.stopPropagation();
-        d.editing = true;
-        d3.select(this).style("display", "none");
+      .each(function(d) {
+         // Initialize multi‑line display.
+         updateTextDisplay(d3.select(this.parentNode as SVGGElement), d.label);
+      })
+      // Trigger editing on single click.
+      .on("click", function(event, d) {
+         event.stopPropagation();
+         d.editing = true;
+         // Hide the text element.
+         d3.select(this).style("display", "none");
 
-        // Append a foreignObject within the node group.
-        const fo = d3.select(this.parentNode)
-          .append("foreignObject")
-          .attr("id", "edit-" + d.id)
-          .attr("width", 150)
-          .attr("height", 30)
-          // Center the foreignObject relative to the node.
-          .attr("x", -75)
-          .attr("y", -15);
+         const parentGroup = d3.select(this.parentNode);
+         // Append a foreignObject containing a textarea.
+         const fo = parentGroup.append("foreignObject")
+           .attr("id", "edit-" + d.id)
+           .attr("width", 200)
+           .attr("height", 100)
+           .attr("x", -100)
+           .attr("y", -50);
+         const textarea = fo.append("xhtml:textarea")
+           .style("width", "198px")
+           .style("height", "98px")
+           .style("font-size", "14px")
+           .node() as HTMLTextAreaElement;
+         textarea.value = d.label;
+         textarea.focus();
 
-        const input = fo.append("xhtml:input")
-          .attr("type", "text")
-          .style("width", "148px")
-          .style("height", "28px")
-          .style("font-size", "14px")
-          .node() as HTMLInputElement;
-
-        input.value = d.label;
-        input.focus();
-
-        // When editing is done, update the node text and rectangle size.
-        const finishEditing = () => {
-          d.label = input.value;
-          d.editing = false;
-          fo.remove();
-          d3.select(this)
-            .text(d.label)
-            .style("display", "block");
-          updateRect(d3.select(this.parentNode), d);
-        };
-
-        input.addEventListener("blur", finishEditing);
-        input.addEventListener("keydown", (e) => {
-          if (e.key === "Enter") finishEditing();
-        });
+         // When pressing keys...
+         textarea.addEventListener("keydown", (e) => {
+           // If Enter is pressed without Shift, finish editing.
+           if (e.key === "Enter" && !e.shiftKey) {
+             e.preventDefault();
+             finishEditing();
+           }
+           // If Shift+Enter, allow newline insertion.
+         });
+         // Also finish editing on blur.
+         textarea.addEventListener("blur", finishEditing);
+         function finishEditing() {
+           d.label = textarea.value;
+           d.editing = false;
+           fo.remove();
+           // Show and update the text element with multiline support.
+           const textEl = d3.select(parentGroup.select("text").node());
+           textEl.style("display", "block");
+           updateTextDisplay(parentGroup, d.label);
+         }
       });
 
-    // Function to update rectangle dimensions based on text size.
-    function updateRect(nodeGroupSelection: d3.Selection<SVGGElement, NodeDatum, any, any>, d: NodeDatum) {
-      const textEl = nodeGroupSelection.select("text").node();
-      if (textEl) {
-        const bbox = textEl.getBBox();
-        const padding = 10;
-        nodeGroupSelection.select("rect")
-          .attr("x", bbox.x - padding / 2)
-          .attr("y", bbox.y - padding / 2)
-          .attr("width", bbox.width + padding)
-          .attr("height", bbox.height + padding);
-      }
-    }
-
-    // Initially update all rectangle sizes.
-    nodeSelection.each(function(d) {
-      updateRect(d3.select(this), d);
-    });
-
-    // Update positions on every simulation tick.
+    // On every simulation tick, update positions and rectangle sizes.
     simulation.on("tick", () => {
-      // Update link positions.
       link
         .attr("x1", d => (d.source as NodeDatum).x!)
         .attr("y1", d => (d.source as NodeDatum).y!)
         .attr("x2", d => (d.target as NodeDatum).x!)
         .attr("y2", d => (d.target as NodeDatum).y!);
-
-      // Update node group positions and rectangle sizes.
-      nodeSelection.attr("transform", d => `translate(${d.x}, ${d.y})`)
-        .each(function(d) {
-          updateRect(d3.select(this), d);
+      nodeSelection.attr("transform", d => `translate(${d.x},${d.y})`)
+        .each(function() {
+          updateRect(d3.select(this));
         });
     });
 
-    // Drag behavior.
+    // Updates the displayed text by splitting into lines (using tspans).
+    function updateTextDisplay(nodeGroupSelection: d3.Selection<SVGGElement, NodeDatum, any, any>, textString: string) {
+      const textEl = nodeGroupSelection.select("text");
+      textEl.selectAll("tspan").remove();
+      const lines = textString.split("\n");
+      lines.forEach((line, i) => {
+        textEl.append("tspan")
+          .attr("x", 0)
+          .attr("dy", i === 0 ? "0em" : "1.2em")
+          .text(line);
+      });
+      updateRect(nodeGroupSelection);
+    }
+
+    // Update the rectangle to enclose the text with some padding.
+    function updateRect(nodeGroupSelection: d3.Selection<SVGGElement, unknown, any, any>) {
+      const textEl = nodeGroupSelection.select("text").node() as SVGTextElement;
+      if (textEl) {
+        const bbox = textEl.getBBox();
+        const padding = 10;
+        nodeGroupSelection.select("rect")
+          .attr("x", bbox.x - padding/2)
+          .attr("y", bbox.y - padding/2)
+          .attr("width", bbox.width + padding)
+          .attr("height", bbox.height + padding);
+      }
+    }
+
+    // Drag behavior for nodes.
     function drag(simulation: d3.Simulation<any, any>) {
       function dragstarted(event: any, d: NodeDatum) {
         if (!event.active) simulation.alphaTarget(0.3).restart();
@@ -194,10 +205,8 @@ export default function Brainstorming() {
         .on("end", dragended);
     }
 
-    // Cleanup simulation on unmount.
-    return () => {
-      simulation.stop();
-    };
+    // Clean up on unmount.
+    return () => simulation.stop();
   }, [width, height]);
 
   return <svg ref={svgRef} style={{ width: "100vw", height: "100vh" }} />;
