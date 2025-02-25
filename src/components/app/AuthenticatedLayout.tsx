@@ -9,7 +9,6 @@ const AuthenticatedLayout = () => {
     <Column className="w-full h-full items-center">
       <Navbar />
       <Sidebar />
-
       <Suspense fallback={<div>Loading...</div>}>
         <Outlet />
       </Suspense>
