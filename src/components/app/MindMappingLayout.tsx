@@ -1,6 +1,6 @@
 import { Outlet } from 'react-router-dom'
 import { Column } from '../design/Grid'
-import Navbar from './navbar/Navbar'
+import Navbar from './features/navbar/Navbar'
 import { Suspense } from 'react'
 
 const MindMappingLayout = () => {
