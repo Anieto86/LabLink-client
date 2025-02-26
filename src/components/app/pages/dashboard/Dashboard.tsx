@@ -1,5 +1,5 @@
 import Login from '../../login'
-import FormTemplates from '../FormTemplates/FormTemplates'
+import FormTemplates from '../../features/FormTemplates/FormTemplates'
 
 const Dashboard = () => {
   return (

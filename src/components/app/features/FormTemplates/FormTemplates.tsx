@@ -1,4 +1,4 @@
-import type { FormTemplate } from '@/types/formTempaltes'
+import type { FormTemplate } from '@/components/app/features/FormTemplates/formTempaltesTypes'
 import { FormTemplateViewModel } from './FormTemplateViewModel'
 
 const FormTemplates = () => {
