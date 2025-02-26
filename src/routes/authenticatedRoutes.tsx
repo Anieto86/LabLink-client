@@ -3,7 +3,7 @@ import MindMappingLayout from '@/components/app/MindMappingLayout'
 import { lazy } from 'react'
 import { Navigate, Route } from 'react-router-dom'
 
-const Dashboard = lazy(() => import('@/components/app/pages/dashboard/Dashboard'))
+const Dashboard = lazy(() => import('@/components/app/layout/dashboard/Dashboard'))
 const Profile = lazy(() => import('@/components/app/pages/profile/Profile'))
 const Settings = lazy(() => import('@/components/app/pages/settings/Settings'))
 const Innovation = lazy(() => import('@/components/app/pages/innovation/Innovation'))
