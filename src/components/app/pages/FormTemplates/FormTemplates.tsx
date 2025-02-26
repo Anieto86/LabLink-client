@@ -1,26 +1,11 @@
-import { useFormTemplates } from '@/api/formTemplates'
-
-interface Structure {
-  name: string
-  type: string
-}
-
-interface FormTemplate {
-  id: string
-  created_at: string
-  name: string
-  description: string
-  structure: Structure[]
-}
+import type { FormTemplate } from '@/types/formTempaltes'
+import { FormTemplateViewModel } from './FormTemplateViewModel'
 
 const FormTemplates = () => {
-  const { data, isLoading, error } = useFormTemplates()
-  const formTemplates = data as FormTemplate[]
+  const { formTemplates, isLoading, error } = FormTemplateViewModel()
 
   if (isLoading) return <p>Loading...</p>
   if (error) return <p>Error loading forms</p>
-
-  console.log(formTemplates)
 
   return (
     <div>
