@@ -1,9 +1,10 @@
 import { Row } from "@/components/design/Grid";
+import LogoutButton from "@/components/guest/pages/loginPage/LogOutButton";
 
 const NavBar = () => {
   return (
-    <Row width="100%" justifyContent="flex-end">
-      {/* <LogoutButton /> */}
+    <Row className="w-full justify-end p-4 border-b border-gray-200">
+      <LogoutButton />
     </Row>
   );
 };
