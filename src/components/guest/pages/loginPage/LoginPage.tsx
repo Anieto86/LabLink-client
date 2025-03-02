@@ -42,7 +42,7 @@ const LoginPage = () => {
       })
 
       const result = await response.json()
-
+      console.log(result, 'result')
       if (!response.ok) {
         setError('root', {
           message: result.detail || 'Login failed. Please check your credentials.'
