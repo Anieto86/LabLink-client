@@ -1,6 +1,6 @@
+import React, { lazy, Suspense } from 'react'
+import { Route, Routes } from 'react-router-dom'
 import MindMappingLayout from '@/app/MindMappingLayout'
-import React, { lazy } from 'react'
-import { Navigate, Route, Routes } from 'react-router-dom'
 import NotFound from './NotFound'
 
 const Dashboard = lazy(() => import('@/app/layout/Dashboard'))
@@ -11,22 +11,24 @@ const MindMap = lazy(() => import('@/app/pages/mind-map/MindMap'))
 
 const AuthenticatedRoutes: React.FC = () => {
   return (
-    <Routes>
-      {/* Authenticated Layout Routes */}
-      <Route path="/" element={<Dashboard />} errorElement={<NotFound />}>
-        <Route path="profile" element={<Profile />} errorElement={<NotFound />} />
-        <Route path="settings" element={<Settings />} errorElement={<NotFound />} />
-        <Route path="innovation" element={<Innovation />} errorElement={<NotFound />} />
+    <Suspense fallback={<div>Loading...</div>}>
+      <Routes>
+        {/* Ruta raíz que usa Dashboard como layout */}
+        <Route path="/" element={<Dashboard />} errorElement={<NotFound />}>
+          <Route path="profile" element={<Profile />} errorElement={<NotFound />} />
+          <Route path="settings" element={<Settings />} errorElement={<NotFound />} />
+          <Route path="innovation" element={<Innovation />} errorElement={<NotFound />} />
 
-        {/* MindMapping Layout Routes */}
-        <Route element={<MindMappingLayout />}>
-          <Route path="brainstorming" element={<MindMap />} />
+          {/* Rutas anidadas para MindMappingLayout */}
+          <Route element={<MindMappingLayout />}>
+            <Route path="brainstorming" element={<MindMap />} />
+          </Route>
         </Route>
-      </Route>
 
-      {/* Catch-all Route for 404 */}
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+        {/* Ruta catch-all para manejar 404 */}
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </Suspense>
   )
 }
 
