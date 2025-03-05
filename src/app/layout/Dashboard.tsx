@@ -1,4 +1,5 @@
 import React from 'react'
+import { Suspense } from 'react'
 import Sidebar from './Sidebar'
 import Header from './Header'
 import { Outlet } from 'react-router-dom'
@@ -14,7 +15,9 @@ const Dashboard: React.FC = () => {
 
       {/* Sidebar */}
       <div className="grid-in-sidebar">
-        <Sidebar />
+        <Suspense fallback={<div>Loading...</div>}>
+          <Sidebar />
+        </Suspense>
       </div>
 
       {/* Main Content */}

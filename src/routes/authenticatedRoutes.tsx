@@ -1,7 +1,7 @@
-import AuthenticatedLayout from '@/app/AuthenticatedLayout'
 import MindMappingLayout from '@/app/MindMappingLayout'
 import React, { lazy } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
+import NotFound from './NotFound'
 
 const Dashboard = lazy(() => import('@/app/layout/Dashboard'))
 const Profile = lazy(() => import('@/app/pages/profile/Profile'))
@@ -13,11 +13,10 @@ const AuthenticatedRoutes: React.FC = () => {
   return (
     <Routes>
       {/* Authenticated Layout Routes */}
-      <Route element={<AuthenticatedLayout />}>
-        <Route path="dashboard" element={<Dashboard />} />
-        <Route path="profile" element={<Profile />} />
-        <Route path="settings" element={<Settings />} />
-        <Route path="innovationndd" element={<Innovation />} />
+      <Route path="/" element={<Dashboard />} errorElement={<NotFound />}>
+        <Route path="profile" element={<Profile />} errorElement={<NotFound />} />
+        <Route path="settings" element={<Settings />} errorElement={<NotFound />} />
+        <Route path="innovation" element={<Innovation />} errorElement={<NotFound />} />
 
         {/* MindMapping Layout Routes */}
         <Route element={<MindMappingLayout />}>
