@@ -1,6 +1,6 @@
 import { Outlet } from 'react-router-dom'
-import { Column } from '@/components/design/Grid'
-import GuestNavBar from '@/components/guest/guestNavBar/GuestNavBar'
+import { Column } from '@/app/components/design/Grid'
+import GuestNavBar from '@/guest/guestNavBar/GuestNavBar'
 
 const GuestLayout = () => {
   return (

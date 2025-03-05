@@ -1,7 +1,7 @@
-import { Column, Row } from '@/components/design/Grid'
-import { Input } from '@/components/design/Input'
-import { Button } from '@/components/design/Button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/design/Card'
+import { Column, Row } from '@/app/components/design/Grid'
+import { Input } from '@/app/components/design/Input'
+import { Button } from '@/app/components/design/Button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/app/components/design/Card'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 

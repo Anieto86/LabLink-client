@@ -102,24 +102,3 @@ body {
   background-color: hsl(190, 85%, 45%);
   color: hsl(240, 5%, 10%);
 }
-
-@layer utilities {
-  .grid-areas-dashboard {
-    grid-template-areas:
-      "sidebar header"
-      "sidebar main";
-    grid-template-columns: auto 1fr;
-    grid-template-rows: auto 1fr;
-  }
-  .grid-in-sidebar {
-    grid-area: sidebar;
-  }
-
-  .grid-in-header {
-    grid-area: header;
-  }
-
-  .grid-in-main {
-    grid-area: main;
-  }
-}

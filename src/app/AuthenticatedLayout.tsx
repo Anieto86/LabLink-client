@@ -1,7 +1,8 @@
 import { Outlet } from 'react-router-dom'
-import { Column } from '../design/Grid'
-import Sidebar from '@/components/app/layout/Sidebar'
+
 import { Suspense } from 'react'
+import { Column } from './components/design/Grid'
+import Sidebar from './layout/Sidebar'
 
 const AuthenticatedLayout = () => {
   return (

@@ -1,5 +1,5 @@
-import { Button } from '@/components/design/Button'
-import { Column } from '@/components/design/Grid'
+import { Button } from '@/app/components/design/Button'
+import { Column } from '@/app/components/design/Grid'
 import { useNavigate } from 'react-router-dom'
 
 const Innovation = () => {

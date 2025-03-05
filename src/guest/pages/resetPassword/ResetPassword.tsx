@@ -1,7 +1,7 @@
-import { Column, Row } from '@/components/design/Grid'
-import { Input } from '@/components/design/Input'
-import { Button } from '@/components/design/Button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/design/Card'
+import { Column, Row } from '@/app/components/design/Grid'
+import { Input } from '@/app/components/design/Input'
+import { Button } from '@/app/components/design/Button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/app/components/design/Card'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 
@@ -31,11 +31,7 @@ const ResetPasswordPage = () => {
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div>
-              <Input
-                type="email"
-                placeholder="Enter your email"
-                {...register('email', { required: 'Email is required' })}
-              />
+              <Input type="email" placeholder="Enter your email" {...register('email', { required: 'Email is required' })} />
               {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
             </div>
             <Button type="submit" className="w-full">
