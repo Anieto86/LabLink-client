@@ -1,7 +1,7 @@
-import type { FormTemplate } from '@/components/app/features/FormTemplates/formTempaltesTypes'
+import type { FormTemplate } from './FormTemplateTypes'
 import { FormTemplateViewModel } from './FormTemplateViewModel'
 
-const FormTemplates = () => {
+export const FormTemplates = () => {
   const { formTemplates, isLoading, error } = FormTemplateViewModel()
 
   if (isLoading) return <p>Loading...</p>
@@ -22,5 +22,3 @@ const FormTemplates = () => {
     </div>
   )
 }
-
-export default FormTemplates

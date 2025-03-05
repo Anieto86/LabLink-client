@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom'
 const sidebarContent = [
   { text: 'Innovation', link: '/innovation' },
   { text: 'Profile', link: '/profile' },
-  { text: 'Settings', link: '/settings' }
+  { text: 'Settings', link: '/settings' },
+  { text: 'Forms', link: '/forms' }
 ]
 
 const Sidebar = () => {
