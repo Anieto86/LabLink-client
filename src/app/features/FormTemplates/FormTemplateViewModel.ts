@@ -1,5 +1,5 @@
 import { useFormTemplates } from '@/api/formTemplates'
-import type { FormTemplate } from '@/components/app/features/FormTemplates/formTempaltesTypes'
+import type { FormTemplate } from './FormTemplateTypes'
 
 export const FormTemplateViewModel = () => {
   const { data, isLoading, error } = useFormTemplates()

@@ -10,3 +10,12 @@ export interface FormTemplate {
   description: string
   structure: Structure[]
 }
+
+export interface FormField {
+  label: string
+  type: 'text' | 'number' | 'date'
+}
+
+export interface FormData {
+  fields: FormField[]
+}

@@ -7,7 +7,7 @@ const Dashboard = lazy(() => import('@/app/layout/Dashboard'))
 const Profile = lazy(() => import('@/app/pages/profile/Profile'))
 const Settings = lazy(() => import('@/app/pages/settings/Settings'))
 const Innovation = lazy(() => import('@/app/pages/innovation/Innovation'))
-const Forms = lazy(() => import('@/app/pages/forms/Forms'))
+const Forms = lazy(() => import('@/app/pages/Forms/Forms'))
 const MindMap = lazy(() => import('@/app/pages/mind-map/MindMap'))
 
 const AuthenticatedRoutes: React.FC = () => {
