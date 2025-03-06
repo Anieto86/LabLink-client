@@ -1,10 +1,10 @@
 .grid-areas-dashboard {
   display: grid;
   grid-template-areas:
-    "header header"
-    "sidebar main";
+    "header header header"
+    "sidebar main formToolbox";
   grid-template-rows: auto 1fr;
-  grid-template-columns: auto 1fr;
+  grid-template-columns: auto 1fr auto;
   height: 100vh;
 }
 
@@ -21,4 +21,9 @@
 .grid-in-main {
   grid-area: main;
   overflow: auto;
+}
+
+.grid-in-formToolbox {
+  grid-area: formToolbox;
+  background-color: rgb(255, 204, 128);
 }

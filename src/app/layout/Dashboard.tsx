@@ -1,3 +1,4 @@
+import { FormToolbox } from './FormToolbox'
 import React from 'react'
 import Sidebar from './Sidebar'
 import Header from './Header'
@@ -8,19 +9,23 @@ const Dashboard: React.FC = () => {
   return (
     <div className="grid-areas-dashboard">
       {/* Header */}
-      <div className="grid-in-header">
+      <header className="grid-in-header">
         <Header />
-      </div>
+      </header>
 
       {/* Sidebar */}
-      <div className="grid-in-sidebar">
+      <aside className="grid-in-sidebar">
         <Sidebar />
-      </div>
+      </aside>
 
       {/* Main Content */}
-      <div className="grid-in-main">
+      <main className="grid-in-main">
         <Outlet />
-      </div>
+      </main>
+
+      <aside className="grid-in-formToolbox">
+        <FormToolbox />
+      </aside>
     </div>
   )
 }

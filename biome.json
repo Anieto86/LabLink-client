@@ -29,14 +29,15 @@
     "rules": {
       "recommended": true,
       "correctness": {
+        "noUndeclaredDependencies": "error",
         "useExhaustiveDependencies": "off",
         "noUnusedVariables": {
           "fix": "none",
           "level": "error"
         },
         "noUnusedImports": "error",
-        "noUndeclaredVariables": "error",
-        "noUndeclaredDependencies": "error"
+        "noUndeclaredVariables": "error"
+
       },
       "suspicious": {
         "noExplicitAny": "warn",
