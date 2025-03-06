@@ -1,13 +1,19 @@
 import './App.css'
-import { Button } from '@/components/ui/button'
+import { RouterProvider } from 'react-router-dom'
+import { router } from '@/routes/router'
+import { ErrorBoundary } from 'react-error-boundary'
+import { ErrorBoundaryFallback } from './routes/ErrorBoundaryFallback'
 
 function App() {
   return (
-    <>
-      <h1 className="text-3xl font-bold underline">Hello world!</h1>
-      <h1 className="text-3xl text-red-800 font-bold underline">Hello world!</h1>
-      <Button className="btn-secondary">Click me</Button>
-    </>
+    <ErrorBoundary
+      FallbackComponent={ErrorBoundaryFallback}
+      onReset={() => {
+        location.reload()
+      }}
+    >
+      <RouterProvider router={router} />
+    </ErrorBoundary>
   )
 }
 
