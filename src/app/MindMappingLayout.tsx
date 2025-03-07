@@ -1,15 +1,11 @@
 import { Outlet } from 'react-router-dom'
-import { Column } from '../design/Grid'
-import Navbar from './navbar/Navbar'
-import Sidebar from '@/components/app/sidebar/Sidebar'
-import { Suspense } from 'react'
 
-const AuthenticatedLayout = () => {
+import { Suspense } from 'react'
+import { Column } from './components/design/Grid'
+
+const MindMappingLayout = () => {
   return (
     <Column className="w-full h-full items-center">
-      <Navbar />
-      <Sidebar />
-
       <Suspense fallback={<div>Loading...</div>}>
         <Outlet />
       </Suspense>
@@ -17,4 +13,4 @@ const AuthenticatedLayout = () => {
   )
 }
 
-export default AuthenticatedLayout
+export default MindMappingLayout

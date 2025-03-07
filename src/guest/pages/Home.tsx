@@ -1,5 +1,5 @@
 import { BASE_URL } from '@/api'
-import { Button } from '@/components/ui/button'
+import { Button } from '@/app/components/ui/button'
 import { useQuery } from '@tanstack/react-query'
 
 export const Home = () => {

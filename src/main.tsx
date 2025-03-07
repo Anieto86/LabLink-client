@@ -7,6 +7,8 @@ import { router } from '@/routes/router'
 import { GoogleOAuthProvider } from '@react-oauth/google'
 import { AuthProvider } from '@/context/AuthContext'
 
+import App from './App'
+
 const queryClient = new QueryClient()
 
 const rootElement = document.getElementById('root')
