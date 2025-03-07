@@ -20,6 +20,14 @@ This project uses the following stack:
 - **React Query**: A library for fetching, caching, and updating asynchronous data in React applications.
 - **Zustand**: A small, fast, and scalable bearbones state-management solution using simplified flux principles.
 
+## Installation
+
+This project uses `pnpm` as the package manager. To install the dependencies, run:
+
+```sh
+pnpm install
+```
+
 ## Expanding the ESLint configuration
 
 If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
