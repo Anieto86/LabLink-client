@@ -9,7 +9,7 @@ import { BASE_URL } from '@/api'
 import { useAuth } from '@/context/AuthContext'
 
 type LoginFormValues = {
-  email: string
+  username: string
   password: string
 }
 
@@ -30,37 +30,38 @@ const LoginPage = () => {
 
   const onSubmit = async (data: LoginFormValues) => {
     try {
+      // Create FormData object for OAuth2 compatibility
+      const formData = new FormData();
+      formData.append('username', data.username);
+      formData.append('password', data.password);
+  
       const response = await fetch(`${BASE_URL}/auth/login`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          email: data.email,
-          password: data.password
-        })
-      })
-
-      const result = await response.json()
-      console.log(result, 'result')
+        body: formData
+      });
+  
+      const result = await response.json();
+  
       if (!response.ok) {
+        // Handle error case
         setError('root', {
           message: result.detail || 'Login failed. Please check your credentials.'
-        })
-        return
+        });
+        return;
       }
-
+  
       if (result.access_token) {
-        authLogin(result.access_token)
-        navigate(from, { replace: true })
+        localStorage.setItem('authToken', result.access_token);
+        navigate('/dashboard', { replace: true });
+
       }
     } catch (error) {
-      console.error('Login error:', error)
+      console.error('Login error:', error);
       setError('root', {
         message: 'An error occurred during login. Please try again.'
-      })
+      });
     }
-  }
+  };
 
   const googleLogin = useGoogleLogin({
     onSuccess: async (response) => {
@@ -110,14 +111,14 @@ const LoginPage = () => {
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div>
-              <Input type="email" placeholder="Email" {...register('email', { required: 'Email is required' })} />
-              {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
+              <Input type="email" placeholder="Email" {...register('username', { required: 'Email is required' })} />
+              {errors.username && <p className="text-red-500 text-sm">{errors.username.message?.toString()}</p>}
             </div>
             <div>
               <Input type="password" placeholder="Password" {...register('password', { required: 'Password is required' })} />
-              {errors.password && <p className="text-red-500 text-sm">{errors.password.message}</p>}
+              {errors.password && <p className="text-red-500 text-sm">{errors.password.message?.toString()}</p>}
             </div>
-            {errors.root && <p className="text-red-500 text-sm text-center">{errors.root.message}</p>}
+            {errors.root && <p className="text-red-500 text-sm text-center">{errors.root.message?.toString()}</p>}
             <Button type="submit" className="w-full">
               Sign In
             </Button>

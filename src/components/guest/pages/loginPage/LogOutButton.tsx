@@ -34,7 +34,7 @@ const LogoutButton = ({ className }: LogoutButtonProps) => {
       type="button"
       onClick={handleLogout}
       disabled={isLoading}
-      className={`flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors ${className}`}
+      className={`flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors ${className} cursor-pointer z-10`}
       aria-label="Logout"
     >
       {isLoading ? <span className="animate-spin h-4 w-4 border-t-2 border-gray-500 rounded-full" /> : <LogOut className="h-4 w-4" />}

@@ -39,7 +39,7 @@ const SignupPage = () => {
     
     try {
       // First call signup endpoint
-      const signupResponse = await fetch(`${BASE_URL}/signup`, {
+      const signupResponse = await fetch(`${BASE_URL}/auth/signup`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -58,7 +58,7 @@ const SignupPage = () => {
       }
       
       // Then login to get the token
-      const loginResponse = await fetch(`${BASE_URL}/login`, {
+      const loginResponse = await fetch(`${BASE_URL}/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
