@@ -1,5 +1,5 @@
+import { Column } from '@/app/components/design/Grid'
 import { Outlet } from 'react-router-dom'
-import { Column } from '@/components/design/Grid'
 
 const GuestLayout = () => {
   return (

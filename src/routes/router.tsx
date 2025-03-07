@@ -11,21 +11,21 @@ import { GuestRoute } from '@/routes/guestRoutes';
 import { AuthCheck, LoadingFallback } from '@/routes/helpers';
 
 // Layouts
-const GuestLayout = lazy(() => import('@/components/guest/GuestLayout'));
-const AuthenticatedLayout = lazy(() => import('@/components/app/AuthenticatedLayout'));
-const MindMappingLayout = lazy(() => import('@/components/app/MindMappingLayout'));
+const GuestLayout = lazy(() => import('@/guest/layouts/GuestLayout'));
+const AuthenticatedLayout = lazy(() => import('@/app/AuthenticatedLayout'));
+const MindMappingLayout = lazy(() => import('@/app/MindMappingLayout'));
 
 // Guest pages
-const LoginPage = lazy(() => import('@/components/guest/pages/loginPage/LoginPage'));
-const SignUp = lazy(() => import('@/components/guest/pages/signUp/SignUp'));
-const ResetPassword = lazy(() => import('@/components/guest/pages/resetPassword/ResetPassword'));
+const LoginPage = lazy(() => import('@/guest/pages/loginPage/LoginPage'));
+const SignUp = lazy(() => import('@/guest/pages/signUp/SignUp'));
+const ResetPassword = lazy(() => import('@/guest/pages/resetPassword/ResetPassword'));
 
 // Authenticated pages
-const Dashboard = lazy(() => import('@/components/app/pages/dashboard/Dashboard'));
-const Profile = lazy(() => import('@/components/app/pages/profile/Profile'));
-const Settings = lazy(() => import('@/components/app/pages/settings/Settings'));
-const Innovation = lazy(() => import('@/components/app/pages/innovation/Innovation'));
-const MindMap = lazy(() => import('@/components/app/pages/mind-map/MindMap'));
+const Dashboard = lazy(() => import('@/app/layout/Dashboard'));
+const Profile = lazy(() => import('@/app/pages/profile/Profile'));
+const Settings = lazy(() => import('@/app/pages/settings/Settings'));
+const Innovation = lazy(() => import('@/app/pages/innovation/Innovation'));
+const MindMap = lazy(() => import('@/app/pages/mind-map/MindMap'));
 
 export const router = createBrowserRouter(
   createRoutesFromElements(

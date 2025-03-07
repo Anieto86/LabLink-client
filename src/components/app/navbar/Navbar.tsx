@@ -1,5 +1,5 @@
-import { Row } from "@/components/design/Grid";
-import LogoutButton from "@/components/guest/pages/loginPage/LogOutButton";
+import { Row } from "@/app/components/design/Grid";
+import LogoutButton from "@/guest/pages/loginPage/LogOutButton";
 
 const NavBar = () => {
   return (
