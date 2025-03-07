@@ -1,18 +1,17 @@
-import { lazy } from 'react'
-import { Route, Outlet } from 'react-router-dom'
+import { Navigate } from 'react-router-dom'
+import type { ReactNode } from 'react'
 
-// Lazy-loaded components for guest routes
-const GuestLayout = lazy(() => import('@/guest/layouts/GuestLayout'))
-const LoginPage = lazy(() => import('@/guest/pages/loginPage/LoginPage'))
-const SignUp = lazy(() => import('@/guest/pages/signUp/SignUp'))
-const ResetPassword = lazy(() => import('@/guest/pages/resetPassword/ResetPassword'))
+interface GuestRouteProps {
+  children: ReactNode
+}
 
-export const guestRoutes = (
-  <Route element={<GuestLayout />}>
-    <Route index element={<LoginPage />} />
-    <Route path="login" element={<LoginPage />} />
-    <Route path="signup" element={<SignUp />} />
-    <Route path="reset-password" element={<ResetPassword />} />
-    <Route path="*" element={<Outlet />} />
-  </Route>
-)
+export const GuestRoute = ({ children }: GuestRouteProps) => {
+  const isAuthenticated = localStorage.getItem('authToken') !== null
+
+  if (isAuthenticated) {
+    // If user is authenticated, redirect to dashboard
+    return <Navigate to="/dashboard" replace />
+  }
+
+  return <>{children}</>
+}
