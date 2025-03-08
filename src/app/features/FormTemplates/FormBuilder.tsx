@@ -1,61 +1,38 @@
-import { Controller, useFieldArray, useForm } from 'react-hook-form'
-import type { FormData } from './FormTemplateTypes'
+import { useForm } from 'react-hook-form'
+import type { FormDataType } from './FormTemplateTypes'
 import { Input } from '@/app/components/design/Input'
 import { Button } from '@/app/components/design/Button'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/app/components/ui/select'
+import { Textarea } from '@/app/components/ui/textarea'
 
 export const FormBuilder = () => {
-  const { control, handleSubmit, register } = useForm<FormData>({
+  const { handleSubmit, register } = useForm<FormDataType>({
     defaultValues: {
       fields: []
     }
   })
 
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: 'fields'
-  })
-
-  const onSubmit = (data: FormData) => {
+  const onSubmit = (data: FormDataType) => {
     // send data to the server
-    console.log(data)
+    // console.log(data)
+    try {
+      //add toast
+      console.log(data)
+    } catch (error) {
+      //add toast
+      console.error(error)
+    }
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      {fields.map((field, index) => (
-        <div key={field.id} className="flex items-center gap-2">
-          <Input placeholder="Label" {...register(`fields.${index}.label` as const)} />
-
-          {/* Shadcn select con react-hook-form */}
-          <Controller
-            control={control}
-            name={`fields.${index}.type` as const}
-            render={({ field }) => (
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Select type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="text">Text</SelectItem>
-                  <SelectItem value="number">Number</SelectItem>
-                  <SelectItem value="date">Date</SelectItem>
-                </SelectContent>
-              </Select>
-            )}
-          />
-
-          <Button type="button" onClick={() => remove(index)} variant="outline">
-            Remove
-          </Button>
-        </div>
-      ))}
-
-      <div className="flex gap-2">
-        <Button type="button" onClick={() => append({ label: '', type: 'text' })}>
-          Add Field
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-2">
+      <div className="flex flex-col items-center gap-2 ">
+        <Input placeholder="Name" {...register('fields.0.label')} />
+        <Textarea placeholder="Description" {...register('fields.0.type')} className="border p-2 rounded" />
+      </div>
+      <div className="flex gap-2 ">
+        <Button className="w-full" type="submit">
+          Save
         </Button>
-        <Button type="submit">Save Form Schema</Button>
       </div>
     </form>
   )

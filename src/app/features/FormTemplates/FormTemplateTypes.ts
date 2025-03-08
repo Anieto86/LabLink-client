@@ -1,21 +1,21 @@
-export interface Structure {
+export interface StructureType {
   name: string
   type: string
 }
 
-export interface FormTemplate {
+export interface FormTemplateType {
   id: string
   created_at: string
   name: string
   description: string
-  structure: Structure[]
+  structure: StructureType[]
 }
 
-export interface FormField {
+export interface FormFieldType {
   label: string
   type: 'text' | 'number' | 'date'
 }
 
-export interface FormData {
-  fields: FormField[]
+export interface FormDataType {
+  fields: FormFieldType[]
 }
