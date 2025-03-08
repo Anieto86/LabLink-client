@@ -27,6 +27,7 @@
   "linter": {
     "enabled": true,
     "rules": {
+
       "recommended": true,
       "correctness": {
         "noUndeclaredDependencies": "error",

@@ -1,31 +1,26 @@
-import { FormToolbox } from './FormToolbox'
 import React from 'react'
-import Sidebar from './Sidebar'
+import './Dashboard.css'
 import Header from './Header'
 import { Outlet } from 'react-router-dom'
-import './Dashboard.css'
+import Sidebar from './Sidebar'
 
 const Dashboard: React.FC = () => {
   return (
     <div className="grid-areas-dashboard">
       {/* Header */}
-      <header className="grid-in-header">
+      <div className="grid-in-header">
         <Header />
-      </header>
+      </div>
 
       {/* Sidebar */}
-      <aside className="grid-in-sidebar">
+      <div className="grid-in-sidebar">
         <Sidebar />
-      </aside>
+      </div>
 
       {/* Main Content */}
-      <main className="grid-in-main">
+      <div className="grid-in-main">
         <Outlet />
-      </main>
-
-      <aside className="grid-in-formToolbox">
-        <FormToolbox />
-      </aside>
+      </div>
     </div>
   )
 }
