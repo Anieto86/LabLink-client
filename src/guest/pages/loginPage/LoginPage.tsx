@@ -7,7 +7,7 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { useGoogleLogin } from '@react-oauth/google'
 import { BASE_URL } from '@/api'
 // import { useAuth } from '@/context/AuthContext'
-import Login from '@/app/components/login'
+import Login from '@/guest/pages/loginPage/login'
 import { useAuthStore } from '@/store/auth'
 
 const LoginPage = () => {
@@ -19,7 +19,7 @@ const LoginPage = () => {
   const [error, setError] = useState<string | null>(null)
 
   // Get the page they were trying to access, if any
-  const from = location.state?.from?.pathname || '/dashboard'
+  const from = location.state?.from?.pathname || '/home'
 
   const googleLogin = useGoogleLogin({
     onSuccess: async (response) => {
@@ -62,9 +62,7 @@ const LoginPage = () => {
         </CardHeader>
         <CardContent>
           <Login />
-
           {error && <p className="text-red-500 text-sm text-center">{error}</p>}
-
           <div className="mt-4 flex items-center justify-center">
             <Button variant="outline" className="w-full flex items-center gap-2" onClick={() => googleLogin()}>
               Sign in with Google

@@ -1,8 +1,8 @@
 import { useAuthStore } from '@/store/auth'
 import api from '@/lib/axios'
-import { Button } from './design/Button'
+import { Button } from '../../../app/components/design/Button'
 import { useForm } from 'react-hook-form'
-import { Input } from './design/Input'
+import { Input } from '../../../app/components/design/Input'
 import { useNavigate } from 'react-router-dom'
 type LoginFormValues = {
   email: string
