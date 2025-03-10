@@ -1,15 +1,16 @@
 .grid-areas-dashboard {
   display: grid;
   grid-template-areas:
-    "sidebar header header"
+    "navbar navbar navbar"
     "sidebar main main";
   grid-template-rows: auto 1fr;
   grid-template-columns: auto 1fr auto;
   height: 100vh;
+  width: 100vw;
 }
 
-.grid-in-header {
-  grid-area: header;
+.grid-in-navbar {
+  grid-area: navbar;
   background-color: blueviolet;
 }
 
@@ -21,9 +22,6 @@
 .grid-in-main {
   grid-area: main;
   overflow: auto;
-}
 
-.grid-in-formToolbox {
-  grid-area: formToolbox;
-  background-color: rgb(255, 204, 128);
+  padding: 1rem;
 }
