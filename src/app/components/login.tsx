@@ -32,7 +32,8 @@ const Login = () => {
       })
 
       if (response.status === 200) {
-        setToken(response.data.access_token)
+        const data = response.data as { access_token: string }
+        setToken(data.access_token)
         navigate('/dashboard', { replace: true })
       }
     } catch (error: unknown) {

@@ -18,6 +18,7 @@ export const FormBuilder = () => {
 
   const onSubmit = (data: FormDataType) => {
     // send data to the server
+    // biome-ignore lint/suspicious/noConsole: <explanation>
     console.log(data)
   }
 
@@ -27,7 +28,6 @@ export const FormBuilder = () => {
         <div key={field.id} className="flex items-center gap-2">
           <Input placeholder="Label" {...register(`fields.${index}.label` as const)} />
 
-          {/* Shadcn select con react-hook-form */}
           <Controller
             control={control}
             name={`fields.${index}.type` as const}
