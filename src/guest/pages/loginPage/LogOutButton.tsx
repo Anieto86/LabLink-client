@@ -1,8 +1,8 @@
 // LogoutButton.tsx
 import { useState } from 'react'
-import { useAuth } from '@/context/AuthContext'
 import { LogOut } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
+import { useAuthStore } from '@/store/auth'
 
 interface LogoutButtonProps {
   className?: string
@@ -10,7 +10,8 @@ interface LogoutButtonProps {
 
 const LogoutButton = ({ className }: LogoutButtonProps) => {
   const [isLoading, setIsLoading] = useState(false)
-  const { logout } = useAuth()
+  // const { logout } = useAuth()
+  const { logout } = useAuthStore()
   const navigate = useNavigate()
 
   const handleLogout = () => {

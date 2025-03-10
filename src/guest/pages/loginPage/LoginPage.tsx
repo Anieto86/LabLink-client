@@ -6,13 +6,16 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/app/components/desig
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useGoogleLogin } from '@react-oauth/google'
 import { BASE_URL } from '@/api'
-import { useAuth } from '@/context/AuthContext'
-import Login from '@/app/components/Login'
+// import { useAuth } from '@/context/AuthContext'
+import Login from '@/app/components/login'
+import { useAuthStore } from '@/store/auth'
 
 const LoginPage = () => {
   const navigate = useNavigate()
   const location = useLocation()
-  const { login: authLogin } = useAuth()
+  // const { login: authLogin } = useAuth()
+  const { setToken } = useAuthStore()
+
   const [error, setError] = useState<string | null>(null)
 
   // Get the page they were trying to access, if any
@@ -34,7 +37,7 @@ const LoginPage = () => {
 
         const data = await res.json()
         if (data.access_token) {
-          authLogin(data.access_token)
+          setToken(data.access_token)
           navigate(from, { replace: true })
         } else {
           console.error('Token not returned from backend:', data)

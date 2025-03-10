@@ -1,11 +1,11 @@
 import { Controller, useFieldArray, useForm } from 'react-hook-form'
-import type { FormData } from './FormTemplateTypes'
+import type { FormDataType } from './FormTemplateTypes'
 import { Input } from '@/app/components/design/Input'
 import { Button } from '@/app/components/design/Button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/app/components/ui/select'
 
 export const FormBuilder = () => {
-  const { control, handleSubmit, register } = useForm<FormData>({
+  const { control, handleSubmit, register } = useForm<FormDataType>({
     defaultValues: {
       fields: []
     }
@@ -16,7 +16,7 @@ export const FormBuilder = () => {
     name: 'fields'
   })
 
-  const onSubmit = (data: FormData) => {
+  const onSubmit = (data: FormDataType) => {
     // send data to the server
     console.log(data)
   }
