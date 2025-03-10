@@ -1,8 +1,5 @@
 import { useState } from 'react'
-import { Column, Row } from '@/components/design/Grid'
-import { Input } from '@/components/design/Input'
-import { Button } from '@/components/design/Button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/design/Card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/app/components/design/Card'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
@@ -12,6 +9,9 @@ import { LoaderCircle } from 'lucide-react'
 // npm install @react-oauth/google gapi-script
 import { GoogleLogin } from '@react-oauth/google'
 import { BASE_URL } from '@/api'
+import { Column, Row } from '@/app/components/design/Grid'
+import { Input } from '@/app/components/design/Input'
+import { Button } from '@/app/components/design/Button'
 
 type SignupFormValues = {
   name: string
