@@ -1,21 +1,17 @@
 import { useState } from 'react'
 import { Column, Row } from '@/app/components/design/Grid'
-// import { Input } from '@/app/components/design/Input'
 import { Button } from '@/app/components/design/Button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/app/components/design/Card'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useGoogleLogin } from '@react-oauth/google'
-import { BASE_URL } from '@/api'
-// import { useAuth } from '@/context/AuthContext'
-import Login from '@/guest/pages/loginPage/login'
+import Login from './Login'
 import { useAuthStore } from '@/store/auth'
+import api from '@/lib/axios'
 
 const LoginPage = () => {
   const navigate = useNavigate()
   const location = useLocation()
-  // const { login: authLogin } = useAuth()
   const { setToken } = useAuthStore()
-
   const [error, setError] = useState<string | null>(null)
 
   // Get the page they were trying to access, if any
@@ -26,25 +22,22 @@ const LoginPage = () => {
       const accessToken = response.access_token
 
       try {
-        // Send the access token to the backend
-        const res = await fetch(`${BASE_URL}/auth/google`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ access_token: accessToken, token_type: 'bearer' })
+        // Send the access token to the backend using axios
+        const res = await api.post<{ access_token: string }>('/auth/google', {
+          access_token: accessToken,
+          token_type: 'bearer'
         })
 
-        const data = await res.json()
-        if (data.access_token) {
-          setToken(data.access_token)
+        if (res.data.access_token) {
+          setToken(res.data.access_token)
           navigate(from, { replace: true })
         } else {
-          console.error('Token not returned from backend:', data)
+          console.error('Token not returned from backend:', res.data)
           setError('Google login failed. Please try again or use email login.')
         }
-      } catch (error) {
-        console.error('Error sending token to backend:', error)
+      } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
+        console.error('Error sending token to backend:', errorMessage)
         setError('An error occurred during Google login. Please try again.')
       }
     },
@@ -58,7 +51,7 @@ const LoginPage = () => {
     <Column className="flex min-h-screen items-center justify-center">
       <Card className="w-96 shadow-lg border">
         <CardHeader>
-          <CardTitle className="text-center text-2xl font-semibold">Login</CardTitle>
+          <CardTitle className="text-center text-2xl font-semibold ">Login</CardTitle>
         </CardHeader>
         <CardContent>
           <Login />

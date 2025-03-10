@@ -34,7 +34,7 @@ const Login = () => {
       if (response.status === 200) {
         const data = response.data as { access_token: string }
         setToken(data.access_token)
-        navigate('/home', { replace: true })
+        navigate('/innovation', { replace: true })
       }
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred'
@@ -46,7 +46,7 @@ const Login = () => {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div>
         <Input type="email" placeholder="Email" {...register('email', { required: 'Email is required' })} />
         {errors.email && <p className="text-red-500 text-sm">{errors.email.message?.toString()}</p>}
@@ -56,7 +56,9 @@ const Login = () => {
         {errors.password && <p className="text-red-500 text-sm">{errors.password.message?.toString()}</p>}
       </div>
       {errors.root && <p className="text-red-500 text-sm text-center">{errors.root.message?.toString()}</p>}
-      <Button type="submit">Login</Button>
+      <Button type="submit" className="w-full">
+        Login
+      </Button>
     </form>
   )
 }
