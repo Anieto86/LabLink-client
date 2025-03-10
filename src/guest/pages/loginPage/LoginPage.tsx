@@ -1,67 +1,25 @@
+import { useState } from 'react'
 import { Column, Row } from '@/app/components/design/Grid'
-import { Input } from '@/app/components/design/Input'
+// import { Input } from '@/app/components/design/Input'
 import { Button } from '@/app/components/design/Button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/app/components/design/Card'
-import { useForm } from 'react-hook-form'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useGoogleLogin } from '@react-oauth/google'
 import { BASE_URL } from '@/api'
-import { useAuth } from '@/context/AuthContext'
-
-type LoginFormValues = {
-  username: string
-  password: string
-}
+// import { useAuth } from '@/context/AuthContext'
+import Login from '@/guest/pages/loginPage/login'
+import { useAuthStore } from '@/store/auth'
 
 const LoginPage = () => {
   const navigate = useNavigate()
   const location = useLocation()
-  const { login: authLogin } = useAuth()
+  // const { login: authLogin } = useAuth()
+  const { setToken } = useAuthStore()
+
+  const [error, setError] = useState<string | null>(null)
 
   // Get the page they were trying to access, if any
-  const from = location.state?.from?.pathname || '/dashboard'
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    setError
-  } = useForm<LoginFormValues>()
-
-  const onSubmit = async (data: LoginFormValues) => {
-    try {
-      // Create FormData object for OAuth2 compatibility
-      const formData = new FormData();
-      formData.append('username', data.username);
-      formData.append('password', data.password);
-  
-      const response = await fetch(`${BASE_URL}/auth/login`, {
-        method: 'POST',
-        body: formData
-      });
-  
-      const result = await response.json();
-  
-      if (!response.ok) {
-        // Handle error case
-        setError('root', {
-          message: result.detail || 'Login failed. Please check your credentials.'
-        });
-        return;
-      }
-  
-      if (result.access_token) {
-        localStorage.setItem('authToken', result.access_token);
-        navigate('/dashboard', { replace: true });
-
-      }
-    } catch (error) {
-      console.error('Login error:', error);
-      setError('root', {
-        message: 'An error occurred during login. Please try again.'
-      });
-    }
-  };
+  const from = location.state?.from?.pathname || '/home'
 
   const googleLogin = useGoogleLogin({
     onSuccess: async (response) => {
@@ -79,26 +37,20 @@ const LoginPage = () => {
 
         const data = await res.json()
         if (data.access_token) {
-          authLogin(data.access_token)
+          setToken(data.access_token)
           navigate(from, { replace: true })
         } else {
           console.error('Token not returned from backend:', data)
-          setError('root', {
-            message: 'Google login failed. Please try again or use email login.'
-          })
+          setError('Google login failed. Please try again or use email login.')
         }
       } catch (error) {
         console.error('Error sending token to backend:', error)
-        setError('root', {
-          message: 'An error occurred during Google login. Please try again.'
-        })
+        setError('An error occurred during Google login. Please try again.')
       }
     },
     onError: (error) => {
       console.error('Google Login Failed:', error)
-      setError('root', {
-        message: 'Google login failed. Please try again or use email login.'
-      })
+      setError('Google login failed. Please try again or use email login.')
     }
   })
 
@@ -109,20 +61,8 @@ const LoginPage = () => {
           <CardTitle className="text-center text-2xl font-semibold">Login</CardTitle>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <div>
-              <Input type="email" placeholder="Email" {...register('username', { required: 'Email is required' })} />
-              {errors.username && <p className="text-red-500 text-sm">{errors.username.message?.toString()}</p>}
-            </div>
-            <div>
-              <Input type="password" placeholder="Password" {...register('password', { required: 'Password is required' })} />
-              {errors.password && <p className="text-red-500 text-sm">{errors.password.message?.toString()}</p>}
-            </div>
-            {errors.root && <p className="text-red-500 text-sm text-center">{errors.root.message?.toString()}</p>}
-            <Button type="submit" className="w-full">
-              Sign In
-            </Button>
-          </form>
+          <Login />
+          {error && <p className="text-red-500 text-sm text-center">{error}</p>}
           <div className="mt-4 flex items-center justify-center">
             <Button variant="outline" className="w-full flex items-center gap-2" onClick={() => googleLogin()}>
               Sign in with Google

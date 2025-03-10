@@ -1,18 +1,18 @@
-import { Navigate, useLocation } from 'react-router-dom';
-import type { ReactNode } from 'react';
+import { Navigate, useLocation } from 'react-router-dom'
+import type { ReactNode } from 'react'
 
 interface ProtectedRouteProps {
-  children: ReactNode;
+  children: ReactNode
 }
 
 export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
-  const location = useLocation();
-  const isAuthenticated = localStorage.getItem('authToken') !== null;
+  const location = useLocation()
+  const isAuthenticated = localStorage.getItem('token') !== null
 
   if (!isAuthenticated) {
     // Redirect to login page but save the location they were trying to access
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    return <Navigate to="/login" state={{ from: location }} replace />
   }
 
-  return <>{children}</>;
-};
+  return <>{children}</>
+}

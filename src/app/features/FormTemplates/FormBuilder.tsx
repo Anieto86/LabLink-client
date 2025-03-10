@@ -1,11 +1,11 @@
 import { Controller, useFieldArray, useForm } from 'react-hook-form'
-import type { FormData } from './FormTemplateTypes'
+import type { FormDataType } from './FormTemplateTypes'
 import { Input } from '@/app/components/design/Input'
 import { Button } from '@/app/components/design/Button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/app/components/ui/select'
 
 export const FormBuilder = () => {
-  const { control, handleSubmit, register } = useForm<FormData>({
+  const { control, handleSubmit, register } = useForm<FormDataType>({
     defaultValues: {
       fields: []
     }
@@ -16,8 +16,9 @@ export const FormBuilder = () => {
     name: 'fields'
   })
 
-  const onSubmit = (data: FormData) => {
+  const onSubmit = (data: FormDataType) => {
     // send data to the server
+    // biome-ignore lint/suspicious/noConsole: <explanation>
     console.log(data)
   }
 
@@ -27,7 +28,6 @@ export const FormBuilder = () => {
         <div key={field.id} className="flex items-center gap-2">
           <Input placeholder="Label" {...register(`fields.${index}.label` as const)} />
 
-          {/* Shadcn select con react-hook-form */}
           <Controller
             control={control}
             name={`fields.${index}.type` as const}
@@ -45,7 +45,7 @@ export const FormBuilder = () => {
             )}
           />
 
-          <Button type="button" onClick={() => remove(index)} variant="outline">
+          <Button className="bg-red-700 text-white" type="button" onClick={() => remove(index)} variant="outline">
             Remove
           </Button>
         </div>
@@ -55,7 +55,7 @@ export const FormBuilder = () => {
         <Button type="button" onClick={() => append({ label: '', type: 'text' })}>
           Add Field
         </Button>
-        <Button type="submit">Save Form Schema</Button>
+        <Button type="submit">Create</Button>
       </div>
     </form>
   )
