@@ -5,11 +5,12 @@ import { ProtectedRoute } from '@/routes/ProtectedRoutes'
 import { GuestRoute } from '@/routes/guestRoutes'
 import { AuthCheck, LoadingFallback } from '@/routes/helpers'
 import Forms from '@/app/pages/forms/Forms'
+import { Home } from '@/guest/pages/Home'
 
 // Layouts
 const GuestLayout = lazy(() => import('@/guest/layouts/GuestLayout'))
-const AuthenticatedLayout = lazy(() => import('@/app/AuthenticatedLayout'))
-const MindMappingLayout = lazy(() => import('@/app/MindMappingLayout'))
+const AuthenticatedLayout = lazy(() => import('@/app/layout/AuthenticatedLayout'))
+const MindMappingLayout = lazy(() => import('@/app/layout/MindMappingLayout'))
 
 // Guest pages
 const LoginPage = lazy(() => import('@/guest/pages/loginPage/LoginPage'))
@@ -17,7 +18,7 @@ const SignUp = lazy(() => import('@/guest/pages/signUp/SignUp'))
 const ResetPassword = lazy(() => import('@/guest/pages/resetPassword/ResetPassword'))
 
 // Authenticated pages
-const Dashboard = lazy(() => import('@/app/layout/Dashboard'))
+
 const Profile = lazy(() => import('@/app/pages/profile/Profile'))
 const Settings = lazy(() => import('@/app/pages/settings/Settings'))
 const Innovation = lazy(() => import('@/app/pages/innovation/Innovation'))
@@ -51,7 +52,7 @@ export const router = createBrowserRouter(
           </ProtectedRoute>
         }
       >
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/home" element={<Home />} />
         <Route path="/innovation" element={<Innovation />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/settings" element={<Settings />} />
@@ -72,14 +73,14 @@ export const router = createBrowserRouter(
       </Route>
 
       {/* Root route redirection */}
-      <Route path="/" element={<Navigate to="/dashboard" replace />} />
+      <Route path="/" element={<Navigate to="/home" replace />} />
 
       {/* Catch all route - Redirect to login if not authenticated, dashboard if authenticated */}
       <Route
         path="*"
         element={
           <Suspense fallback={<LoadingFallback />}>
-            <AuthCheck authenticatedRedirect="/dashboard" guestRedirect="/login" />
+            <AuthCheck authenticatedRedirect="/home" guestRedirect="/login" />
           </Suspense>
         }
       />

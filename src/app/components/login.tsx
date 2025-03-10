@@ -34,7 +34,7 @@ const Login = () => {
       if (response.status === 200) {
         const data = response.data as { access_token: string }
         setToken(data.access_token)
-        navigate('/dashboard', { replace: true })
+        navigate('/home', { replace: true })
       }
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred'

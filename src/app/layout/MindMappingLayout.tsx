@@ -1,7 +1,7 @@
 import { Outlet } from 'react-router-dom'
 
 import { Suspense } from 'react'
-import { Column } from './components/design/Grid'
+import { Column } from '../components/design/Grid'
 
 const MindMappingLayout = () => {
   return (

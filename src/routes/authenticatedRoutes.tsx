@@ -1,6 +1,6 @@
 import React, { lazy, Suspense } from 'react'
 import { Route, Routes } from 'react-router-dom'
-import MindMappingLayout from '@/app/MindMappingLayout'
+import MindMappingLayout from '@/app/layout/MindMappingLayout'
 import NotFound from './NotFound'
 
 const Dashboard = lazy(() => import('@/app/layout/Dashboard'))
