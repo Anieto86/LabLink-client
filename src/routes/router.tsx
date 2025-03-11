@@ -5,7 +5,8 @@ import { ProtectedRoute } from '@/routes/ProtectedRoutes'
 import { GuestRoute } from '@/routes/guestRoutes'
 import { AuthCheck, LoadingFallback } from '@/routes/helpers'
 import Forms from '@/app/pages/forms/Forms'
-import { Home } from '@/guest/pages/Home'
+import { Home } from '@/app/pages/homepage/Home'
+// import { Home } from '@/guest/pages/Home'
 
 // Layouts
 const GuestLayout = lazy(() => import('@/guest/layouts/GuestLayout'))
@@ -14,7 +15,7 @@ const MindMappingLayout = lazy(() => import('@/app/layout/MindMappingLayout'))
 
 // Guest pages
 const LoginPage = lazy(() => import('@/guest/pages/loginPage/LoginPage'))
-const SignUp = lazy(() => import('@/guest/pages/signUp/SignUp'))
+const SignUp = lazy(() => import('@/guest/pages/signUpPage/SignUpPage'))
 const ResetPassword = lazy(() => import('@/guest/pages/resetPassword/ResetPassword'))
 
 // Authenticated pages
