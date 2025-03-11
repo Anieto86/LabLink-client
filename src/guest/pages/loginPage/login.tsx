@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom'
 import { useGoogleAuth } from '@/hooks/useGoogleAuth'
 import { useState } from 'react'
 import { LoaderCircle } from 'lucide-react'
+import { SignUpButton } from '../signUpPage/SignUpButton'
 
 type LoginFormValues = {
   email: string
@@ -39,7 +40,7 @@ export default function Login() {
 
   const onSubmit = async (data: LoginFormValues) => {
     setIsLoading(true)
-    clearErrors('root') // Limpiar errores previos
+    clearErrors('root')
 
     try {
       const formData = new URLSearchParams()
@@ -91,9 +92,6 @@ export default function Login() {
           {errors.password && <p className="text-red-500 text-sm">{errors.password.message?.toString()}</p>}
         </div>
 
-        {/* Mostrar errores generales */}
-        {errorMessage && <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">{errorMessage}</div>}
-
         <Button type="submit" className="w-full" disabled={combinedIsLoading}>
           {isLoading ? (
             <>
@@ -105,26 +103,7 @@ export default function Login() {
           )}
         </Button>
 
-        <div className="mt-4 flex flex-col gap-4">
-          <div className="flex items-center">
-            <div className="flex-grow h-px bg-gray-300" />
-            <span className="px-3 text-gray-500 text-sm">OR</span>
-            <div className="flex-grow h-px bg-gray-300" />
-          </div>
-
-          <Button
-            type="button"
-            onClick={() => {
-              clearErrors('root')
-              googleLogin()
-            }}
-            variant="outline"
-            className="w-full flex items-center justify-center gap-2"
-            disabled={combinedIsLoading}
-          >
-            Sign up with Google
-          </Button>
-        </div>
+        <SignUpButton googleLogin={googleLogin} combinedIsLoading={combinedIsLoading} errorMessage={errorMessage} />
       </form>
     </>
   )
