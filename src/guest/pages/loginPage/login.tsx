@@ -3,29 +3,44 @@ import api from '@/lib/axios'
 import { Button } from '../../../app/components/design/Button'
 import { useForm } from 'react-hook-form'
 import { Input } from '../../../app/components/design/Input'
-import { useNavigate, useLocation } from 'react-router-dom'
-import { useGoogleLogin } from '@react-oauth/google'
+import { useNavigate } from 'react-router-dom'
+import { useGoogleAuth } from '@/hooks/useGoogleAuth'
+import { useState } from 'react'
+import { LoaderCircle } from 'lucide-react'
 
 type LoginFormValues = {
   email: string
   password: string
 }
 
-const Login = () => {
+export default function Login() {
   const { setToken } = useAuthStore()
+  const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigate()
-  const location = useLocation()
+
+  const {
+    googleLogin,
+    isLoading: isGoogleLoading,
+    error: googleError
+  } = useGoogleAuth({
+    redirectPath: '/home'
+  })
+
   const {
     register,
     handleSubmit,
     formState: { errors },
-    setError
-  } = useForm<LoginFormValues>()
+    setError,
+    clearErrors
+  } = useForm<LoginFormValues & { root: string }>() // Añadido tipo para error root
 
-  // Get the page they were trying to access, if any
-  const from = location.state?.from?.pathname || '/home'
+  const combinedIsLoading = isLoading || isGoogleLoading
+  const errorMessage = errors.root?.message || googleError
 
   const onSubmit = async (data: LoginFormValues) => {
+    setIsLoading(true)
+    clearErrors('root') // Limpiar errores previos
+
     try {
       const formData = new URLSearchParams()
       formData.append('username', data.email)
@@ -42,44 +57,27 @@ const Login = () => {
         setToken(data.access_token)
         navigate('/innovation', { replace: true })
       }
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred'
-      console.error('Error to login:', errorMessage)
-      setError('root', {
-        message: 'An error occurred during login. Please try again.'
-      })
-    }
-  }
+    } catch (err: unknown) {
+      if (err && typeof err === 'object' && 'response' in err) {
+        const errorObj = err as { response?: { data?: { detail?: string } }; message?: string }
 
-  const googleLogin = useGoogleLogin({
-    onSuccess: async (response) => {
-      const accessToken = response.access_token
-
-      try {
-        // Send the access token to the backend using axios
-        const res = await api.post<{ access_token: string }>('/auth/google', {
-          access_token: accessToken,
-          token_type: 'bearer'
+        // Error general
+        setError('root', {
+          message: errorObj.response?.data?.detail || errorObj.message || 'Authentication failed'
         })
 
-        if (res.data.access_token) {
-          setToken(res.data.access_token)
-          navigate(from, { replace: true })
-        } else {
-          console.error('Token not returned from backend:', res.data)
-          setError('root', { message: 'Google login failed. Please try again or use email login.' })
+        // Errores específicos
+        if (errorObj.response?.data?.detail?.includes('Incorrect email or password')) {
+          setError('email', { message: 'Invalid credentials' })
+          setError('password', { message: 'Invalid credentials' })
         }
-      } catch (error: unknown) {
-        const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
-        console.error('Error sending token to backend:', errorMessage)
-        setError('root', { message: 'An error occurred during Google login. Please try again.' })
+      } else {
+        setError('root', { message: 'An unknown error occurred' })
       }
-    },
-    onError: (error) => {
-      console.error('Google Login Failed:', error)
-      setError('root', { message: 'Google login failed. Please try again or use email login.' })
+    } finally {
+      setIsLoading(false)
     }
-  })
+  }
 
   return (
     <>
@@ -92,19 +90,42 @@ const Login = () => {
           <Input type="password" placeholder="Password" {...register('password', { required: 'Password is required' })} />
           {errors.password && <p className="text-red-500 text-sm">{errors.password.message?.toString()}</p>}
         </div>
-        {errors.root && <p className="text-red-500 text-sm text-center">{errors.root.message?.toString()}</p>}
-        <Button type="submit" className="w-full">
-          Login
+
+        {/* Mostrar errores generales */}
+        {errorMessage && <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">{errorMessage}</div>}
+
+        <Button type="submit" className="w-full" disabled={combinedIsLoading}>
+          {isLoading ? (
+            <>
+              <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
+              Processing...
+            </>
+          ) : (
+            'Log in'
+          )}
         </Button>
+
+        <div className="mt-4 flex flex-col gap-4">
+          <div className="flex items-center">
+            <div className="flex-grow h-px bg-gray-300" />
+            <span className="px-3 text-gray-500 text-sm">OR</span>
+            <div className="flex-grow h-px bg-gray-300" />
+          </div>
+
+          <Button
+            type="button"
+            onClick={() => {
+              clearErrors('root')
+              googleLogin()
+            }}
+            variant="outline"
+            className="w-full flex items-center justify-center gap-2"
+            disabled={combinedIsLoading}
+          >
+            Sign up with Google
+          </Button>
+        </div>
       </form>
-      {errors.root && <p className="text-red-500 text-sm text-center">{errors.root.message?.toString()}</p>}
-      <div className="mt-4 flex items-center justify-center">
-        <Button variant="outline" className="w-full flex items-center gap-2" onClick={() => googleLogin()}>
-          Sign in with Google
-        </Button>
-      </div>
     </>
   )
 }
-
-export default Login

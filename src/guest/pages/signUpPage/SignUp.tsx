@@ -2,12 +2,10 @@ import { Input } from '@/app/components/design/Input'
 import { Button } from '@/app/components/ui/button'
 import { LoaderCircle } from 'lucide-react'
 import { useForm } from 'react-hook-form'
-import { GoogleLogin } from '@react-oauth/google'
-import type { CredentialResponse } from '@react-oauth/google'
-import { BASE_URL } from '@/api'
-import { useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import { useAuthStore } from '@/store/auth'
+import api from '@/lib/axios'
+import { useGoogleAuth } from '@/hooks/useGoogleAuth'
 
 type SignupFormValues = {
   name: string
@@ -19,104 +17,77 @@ type SignupFormValues = {
 export const SignUp = () => {
   const { setToken } = useAuthStore()
   const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState('')
-  const navigate = useNavigate()
+
+  const {
+    googleLogin,
+    isLoading: isGoogleLoading,
+    error: googleError
+  } = useGoogleAuth({
+    redirectPath: '/home'
+  })
+
   const {
     register,
     handleSubmit,
     watch,
-    formState: { errors }
-  } = useForm<SignupFormValues>()
+    formState: { errors },
+    setError,
+    clearErrors
+  } = useForm<SignupFormValues & { root: string }>()
+
+  const combinedIsLoading = isLoading || isGoogleLoading
+  const errorMessage = errors.root?.message || googleError
 
   const onSubmit = async (data: SignupFormValues) => {
+    setIsLoading(true)
+    clearErrors('root')
+
     try {
-      // First call signup endpoint
-      const signupResponse = await fetch(`${BASE_URL}/auth/signup`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
+      try {
+        // First call signup endpoint
+        await api.post('/auth/signup', {
           name: data.name,
           email: data.email,
           password: data.password,
           role: 'user' // default role
         })
-      })
 
-      if (!signupResponse.ok) {
-        const errorData = await signupResponse.json()
-        throw new Error(errorData.detail || 'Signup failed')
-      }
+        // Then login to get the token
+        const formData = new URLSearchParams()
+        formData.append('username', data.email) // username field is actually email in the backend
+        formData.append('password', data.password)
 
-      // Then login to get the token
-      const loginResponse = await fetch(`${BASE_URL}/auth/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        // API expects form data format for login
-        body: new URLSearchParams({
-          username: data.email, // username field is actually email in the backend
-          password: data.password
+        const loginResponse = await api.post('/auth/login', formData, {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
         })
-      })
 
-      if (!loginResponse.ok) {
-        const errorData = await loginResponse.json()
-        throw new Error(errorData.detail || 'Login failed after signup')
+        const { access_token } = loginResponse.data as { access_token: string }
+
+        // Save token and update auth state
+        setToken(access_token)
+
+        // Redirect to dashboard
+      } catch (err: unknown) {
+        if (err && typeof err === 'object' && 'response' in err) {
+          const errorObj = err as { response?: { data?: { detail?: string } }; message?: string }
+          // Usar setError de RHF para errores generales
+          setError('root', {
+            message: errorObj.response?.data?.detail || errorObj.message || 'An unknown error occurred'
+          })
+
+          // Si hay errores específicos de campo, podemos establecerlos también
+          if (errorObj.response?.data?.detail?.includes('email already registered')) {
+            setError('email', { message: 'Email already registered' })
+          }
+        } else {
+          setError('root', { message: 'An unknown error occurred' })
+        }
       }
-
-      const { access_token } = await loginResponse.json()
-
-      // Save token and update auth state
-      setToken(access_token)
-
-      // Redirect to dashboard
-      navigate('/dashboard')
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An unknown error occurred')
     } finally {
       setIsLoading(false)
     }
-  }
-
-  const handleGoogleSuccess = async (credentialResponse: CredentialResponse) => {
-    setIsLoading(true)
-    setError('')
-
-    try {
-      const response = await fetch(`${BASE_URL}/google`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          access_token: credentialResponse.credential
-        })
-      })
-
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.detail || 'Google authentication failed')
-      }
-
-      const { access_token } = await response.json()
-
-      // Save token and update auth state
-      setToken(access_token)
-
-      // Redirect to dashboard
-      navigate('/dashboard')
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An unknown error occurred')
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  const handleGoogleError = () => {
-    setError('Google sign-in was unsuccessful. Please try again.')
   }
 
   return (
@@ -173,7 +144,7 @@ export const SignUp = () => {
             'Sign Up'
           )}
         </Button>
-        {error && <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">{error}</div>}
+        {errorMessage && <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">{errorMessage}</div>}
 
         <div className="mt-4 flex flex-col gap-4">
           <div className="flex items-center">
@@ -183,7 +154,15 @@ export const SignUp = () => {
           </div>
 
           <div className="flex justify-center">
-            <GoogleLogin onSuccess={handleGoogleSuccess} onError={handleGoogleError} useOneTap />
+            <Button
+              type="button"
+              onClick={googleLogin}
+              variant="outline"
+              className="w-full flex items-center justify-center gap-2"
+              disabled={combinedIsLoading}
+            >
+              {isGoogleLoading ? 'Processing...' : 'Sign up with Google'}
+            </Button>
           </div>
         </div>
       </form>
