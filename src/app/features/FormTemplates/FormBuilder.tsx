@@ -2,7 +2,7 @@ import { Controller, useFieldArray, useForm } from 'react-hook-form'
 import type { FormDataType } from './FormTemplateTypes'
 import { Input } from '@/app/components/design/Input'
 import { Button } from '@/app/components/design/Button'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/app/components/ui/select'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 export const FormBuilder = () => {
   const { control, handleSubmit, register } = useForm<FormDataType>({

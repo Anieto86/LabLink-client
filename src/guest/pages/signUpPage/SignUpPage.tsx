@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { Column, Row } from '@/app/components/design/Grid'
-import { Card, CardContent } from '@/app/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { CardHeader, CardTitle } from '@/app/components/design/Card'
 import { SignUp } from './SignUp'
 

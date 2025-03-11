@@ -1,5 +1,5 @@
 import { Input } from '@/app/components/design/Input'
-import { Button } from '@/app/components/ui/button'
+import { Button } from '@/components/ui/button'
 import { LoaderCircle } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { useState } from 'react'
