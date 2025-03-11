@@ -120,7 +120,7 @@ export const SignUp = () => {
   }
 
   return (
-    <div>
+    <>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div>
           <Input type="text" placeholder="Full Name" {...register('name', { required: 'Name is required' })} />
@@ -187,6 +187,6 @@ export const SignUp = () => {
           </div>
         </div>
       </form>
-    </div>
+    </>
   )
 }
