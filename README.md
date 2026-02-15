@@ -28,16 +28,28 @@ src/
 │   └── routing/            # Global router and routing helpers
 ├── assets/                 # Static files (css, svg, etc.)
 ├── features/               # Domain features
-│   ├── forms/
-│   │   ├── api/            # React Query hooks and feature API calls
-│   │   ├── components/     # Feature-specific UI components
-│   │   ├── model/          # Types and view-model hooks
-│   │   └── pages/          # Route pages
-│   ├── home/
-│   ├── innovation/
+│   ├── auth/
+│   │   ├── api/
+│   │   ├── model/
+│   │   ├── pages/
+│   │   ├── routing/
+│   │   └── state/
+│   ├── laboratories/
+│   │   ├── api/
+│   │   ├── model/
+│   │   └── pages/
+│   ├── resources/
+│   │   ├── api/
+│   │   ├── model/
+│   │   └── pages/
+│   ├── reservations/
+│   │   ├── api/
+│   │   ├── model/
+│   │   └── pages/
 │   ├── navigation/
-│   ├── profile/
-│   └── settings/
+│   │   ├── components/
+│   │   ├── layouts/
+│   │   └── styles/
 └── shared/
     ├── lib/                # Shared utilities (api client, cn, etc.)
     └── ui/
@@ -66,8 +78,38 @@ pnpm install
 Required:
 
 ```env
-VITE_API_URL=http://localhost:8000
+VITE_API_URL=http://localhost:3000
 ```
+
+## Migration Notes (Phase 1)
+
+### What moved
+
+- Frontend was migrated to feature-first domains with active scope:
+  - `auth`
+  - `laboratories`
+  - `resources`
+  - `reservations`
+- Routing now has:
+  - public route: `/login`
+  - protected routes: `/laboratories`, `/resources`, `/reservations`
+- Session bootstrap now uses `GET /user/me` on app start if a JWT exists.
+- `src/shared/lib/apiClient.ts` now includes:
+  - JWT bearer request interceptor
+  - global 401 handler hook
+  - normalized API errors (`UNAUTHORIZED`, `CONFLICT`, etc.)
+- Reservations handle `409` conflict with explicit overlap message in UI.
+
+### Pending for Phase 2
+
+- Domains intentionally excluded in this phase:
+  - users (except `/user/me`)
+  - equipment
+  - experiments
+  - laboratory-members
+  - form-templates
+  - automation-agent
+- Harden DTO contracts once backend examples are finalized (field optionality and enum values).
 
 ## Code Quality
 
