@@ -1,9 +1,4 @@
-import axios, {
-  type AxiosAdapter,
-  type AxiosError as AxiosErrorType,
-  type AxiosResponse,
-  type InternalAxiosRequestConfig
-} from 'axios'
+import axios, { type AxiosError, type AxiosResponse, type InternalAxiosRequestConfig } from 'axios'
 
 export type ApiErrorCode = 'UNAUTHORIZED' | 'CONFLICT' | 'NOT_FOUND' | 'VALIDATION_ERROR' | 'UNKNOWN'
 
@@ -34,7 +29,8 @@ export const normalizeApiError = (error: unknown): ApiError => {
     return { status, code: 'UNKNOWN', message, details: data }
   }
 
-  return { status: 0, code: 'UNKNOWN', message: 'Unexpected error' }
+  const fallbackMessage = error instanceof Error ? error.message : 'Unexpected error'
+  return { status: 0, code: 'UNKNOWN', message: fallbackMessage }
 }
 
 export const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
@@ -164,7 +160,8 @@ const response = (config: InternalAxiosRequestConfig, status: number, data: unkn
 })
 
 const fail = (config: InternalAxiosRequestConfig, status: number, message: string, details?: unknown): never => {
-  throw new axios.AxiosError(message, undefined, config, undefined, response(config, status, details || { message }))
+  const error = new axios.AxiosError(message, undefined, config, undefined, response(config, status, details || { message }))
+  throw error
 }
 
 const getBearerToken = (config: InternalAxiosRequestConfig) => {
@@ -190,7 +187,7 @@ const requireUser = (config: InternalAxiosRequestConfig): MockUser => {
 
 const nextId = (prefix: string) => `${prefix}-${Math.random().toString(36).slice(2, 10)}`
 
-const mockAdapter: AxiosAdapter = async (config) => {
+const mockAdapter = async (config: InternalAxiosRequestConfig) => {
   const method = (config.method || 'get').toLowerCase()
   const path = normalizePath(config.url)
   const body = readBody(config)
@@ -413,7 +410,7 @@ apiClient.interceptors.request.use((config) => {
 
 apiClient.interceptors.response.use(
   (response) => response,
-  (error: AxiosErrorType) => {
+  (error: AxiosError) => {
     const normalizedError = normalizeApiError(error)
     if (normalizedError.code === 'UNAUTHORIZED' && unauthorizedHandler) {
       unauthorizedHandler()
@@ -423,4 +420,3 @@ apiClient.interceptors.response.use(
 )
 
 export default apiClient
-
