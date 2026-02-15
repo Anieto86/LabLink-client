@@ -13,7 +13,7 @@ pnpm build            # TypeScript compilation + Vite build
 pnpm tsc              # Type checking only (with increased memory allocation)
 pnpm biome            # Linting with Biome (diagnostic level: error)
 pnpm format           # Code formatting with Biome
-pnpm lint             # ESLint checking
+pnpm lint             # Alias of Biome lint
 pnpm preview          # Preview production build
 pnpm knip             # Detect unused dependencies
 ```
