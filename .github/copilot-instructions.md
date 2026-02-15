@@ -2,34 +2,26 @@
 
 ## Project Overview
 
-This is a React TypeScript application built with Vite for laboratory innovation management. It features Google OAuth authentication, form template management, and mind mapping capabilities.
+This is a React TypeScript application built with Vite for laboratory innovation management, focused on structural UI components and feature domains.
 
 ## Architecture & Key Patterns
 
 ### Directory Structure
 
-- `src/app/` - Authenticated application features and layouts
-- `src/guest/` - Unauthenticated pages (login, signup)
-- `src/components/ui/` - shadcn/ui components
-- `src/app/components/design/` - Custom design system components
-- `src/store/` - Zustand state management
-- `src/api/` - React Query hooks and API layer
+- `src/app/routing/` - Router and routing helpers
+- `src/features/` - Domain features (forms, navigation, innovation, etc.)
+- `src/shared/ui/` - Shared UI primitives and design components
+- `src/shared/lib/` - Shared utilities (API client, class helpers)
 
 ### Routing Strategy
 
-Uses React Router with three layout boundaries:
-
-- `GuestLayout` - For unauthenticated users (`/login`, `/signup`)
+Uses React Router with a single app shell layout:
 - `AuthenticatedLayout` - Main app with sidebar navigation (`/home`, `/forms`, etc.)
-- `MindMappingLayout` - Specialized layout for brainstorming (`/brainstorming`)
-
-Route guards: `ProtectedRoute` and `GuestRoute` components enforce authentication boundaries.
 
 ### State Management
 
-- **Auth**: Zustand store (`useAuthStore`) with localStorage persistence for tokens
 - **Server State**: React Query with centralized `QueryClient` in `main.tsx`
-- **API Layer**: Axios instance with automatic JWT token injection via interceptors
+- **API Layer**: Axios instance configured in `src/shared/lib/apiClient.ts`
 
 ### Component Patterns
 
@@ -57,13 +49,6 @@ pnpm format       # Code formatting with Biome
 
 ## Key Integration Points
 
-### Authentication Flow
-
-1. Google OAuth via `@react-oauth/google` (clientId from `VITE_GOOGLE_CLIENT_ID`)
-2. JWT token stored in localStorage via Zustand
-3. Axios interceptor automatically adds `Bearer` token to requests
-4. Route guards redirect based on auth state
-
 ### API Communication
 
 - Base URL from `VITE_API_URL` environment variable
@@ -88,4 +73,3 @@ pnpm format       # Code formatting with Biome
 - Always use `@/` imports instead of relative paths
 - New API endpoints need both the async function and useQuery hook export
 - Form components should follow the existing pattern in `FormTemplates/` feature
-- Authentication state changes require both Zustand store updates AND localStorage sync

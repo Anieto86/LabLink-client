@@ -25,48 +25,27 @@ pnpm knip             # Detect unused dependencies
 ### Tech Stack
 - **Frontend**: React 18 + TypeScript + Vite
 - **Routing**: React Router v7 with lazy loading
-- **State Management**: Zustand (auth) + React Query (server state)
+- **State Management**: React Query (server state)
 - **UI**: shadcn/ui components + Tailwind CSS (new-york style)
-- **Authentication**: Google OAuth via `@react-oauth/google`
-- **HTTP Client**: Axios with automatic JWT token injection
+- **HTTP Client**: Axios
 - **Code Quality**: Biome (linter + formatter), TypeScript strict mode
 
 ### Project Structure
 
 ```
 src/
-├── app/                    # Authenticated application
-│   ├── layout/            # Layout components (AuthenticatedLayout)
-│   ├── features/          # Feature-based modules (FormTemplates/, navbar/)
-│   ├── pages/             # Page components (forms/, profile/, etc.)
-│   └── components/        # Custom design system components
-├── guest/                 # Unauthenticated pages and layouts
-├── api/                   # React Query hooks and API functions
-├── store/                 # Zustand stores (auth.ts)
-├── hooks/                 # Custom hooks (useGoogleAuth.ts)
-├── routes/                # Router configuration and route guards
-├── lib/                   # Utilities (axios.ts, utils.ts)
-└── components/ui/         # shadcn/ui components
+├── app/routing/           # Router and routing helpers
+├── features/              # Domain features (forms, navigation, innovation, etc.)
+└── shared/                # Shared UI and utilities
 ```
 
 ### Routing Architecture
 
-Two distinct layout boundaries:
-1. **GuestLayout** - Unauthenticated routes (`/login`, `/signup`, `/reset-password`)
-2. **AuthenticatedLayout** - Main app with sidebar navigation (`/home`, `/forms`, `/innovation`, `/profile`, `/settings`)
-
-Route guards: `ProtectedRoute` and `GuestRoute` enforce authentication boundaries.
-
-### Authentication Flow
-
-1. Google OAuth integration with client ID from `VITE_GOOGLE_CLIENT_ID`
-2. JWT token stored in localStorage via Zustand store
-3. Axios interceptor automatically adds `Bearer` token to requests
-4. Route guards redirect based on authentication state
+Single application layout:
+1. **AuthenticatedLayout** - Main app shell with sidebar navigation (`/home`, `/forms`, `/innovation`, `/profile`, `/settings`)
 
 ### State Management Patterns
 
-- **Authentication**: Zustand store (`useAuthStore`) with localStorage persistence
 - **Server State**: React Query with centralized `QueryClient` in `main.tsx`
 - **API Pattern**: All API functions return React Query hooks
   ```typescript
@@ -110,7 +89,6 @@ Route guards: `ProtectedRoute` and `GuestRoute` enforce authentication boundarie
 ## Environment Configuration
 
 **Required Environment Variables:**
-- `VITE_GOOGLE_CLIENT_ID` - Google OAuth client ID
 - `VITE_API_URL` - Backend API base URL
 
 **Development Tools:**
@@ -120,7 +98,6 @@ Route guards: `ProtectedRoute` and `GuestRoute` enforce authentication boundarie
 
 ## Common Patterns and Gotchas
 
-- **Authentication Updates**: Changes to auth state require both Zustand store updates AND localStorage synchronization
 - **New API Endpoints**: Must provide both the async function and the useQuery hook export
 - **Form Components**: Follow existing patterns in `FormTemplates/` feature directory
 - **Environment Access**: Use `import.meta.env` for Vite environment variables
