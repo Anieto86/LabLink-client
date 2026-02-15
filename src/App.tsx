@@ -1,7 +1,7 @@
 import { RouterProvider } from 'react-router-dom'
-import { router } from '@/routes/router'
+import { router } from '@/app/routing/router'
 import { ErrorBoundary } from 'react-error-boundary'
-import { ErrorBoundaryFallback } from './routes/ErrorBoundaryFallback'
+import { ErrorBoundaryFallback } from './app/routing/ErrorBoundaryFallback'
 
 function App() {
   return (
@@ -17,3 +17,4 @@ function App() {
 }
 
 export default App
+
