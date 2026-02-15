@@ -10,7 +10,6 @@ import { Home } from '@/features/home/pages/HomePage'
 // Layouts
 const GuestLayout = lazy(() => import('@/features/auth/layouts/GuestLayout'))
 const AuthenticatedLayout = lazy(() => import('@/features/navigation/layouts/AuthenticatedLayout'))
-const MindMappingLayout = lazy(() => import('@/features/mind-map/layouts/MindMappingLayout'))
 
 // Guest pages
 const LoginPage = lazy(() => import('@/features/auth/pages/LoginPage'))
@@ -22,7 +21,6 @@ const ResetPassword = lazy(() => import('@/features/auth/pages/ResetPasswordPage
 const Profile = lazy(() => import('@/features/profile/pages/ProfilePage'))
 const Settings = lazy(() => import('@/features/settings/pages/SettingsPage'))
 const Innovation = lazy(() => import('@/features/innovation/pages/InnovationPage'))
-const MindMap = lazy(() => import('@/features/mind-map/pages/MindMapPage'))
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
@@ -57,19 +55,6 @@ export const router = createBrowserRouter(
         <Route path="/profile" element={<Profile />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/forms" element={<Forms />} />
-      </Route>
-
-      {/* Mind Mapping Layout - Protected */}
-      <Route
-        element={
-          <ProtectedRoute>
-            <Suspense fallback={<LoadingFallback />}>
-              <MindMappingLayout />
-            </Suspense>
-          </ProtectedRoute>
-        }
-      >
-        <Route path="/brainstorming" element={<MindMap />} />
       </Route>
 
       {/* Root route redirection */}

@@ -36,7 +36,7 @@ pnpm knip             # Detect unused dependencies
 ```
 src/
 ├── app/                    # Authenticated application
-│   ├── layout/            # Layout components (AuthenticatedLayout, MindMappingLayout)
+│   ├── layout/            # Layout components (AuthenticatedLayout)
 │   ├── features/          # Feature-based modules (FormTemplates/, navbar/)
 │   ├── pages/             # Page components (forms/, profile/, etc.)
 │   └── components/        # Custom design system components
@@ -51,10 +51,9 @@ src/
 
 ### Routing Architecture
 
-Three distinct layout boundaries:
+Two distinct layout boundaries:
 1. **GuestLayout** - Unauthenticated routes (`/login`, `/signup`, `/reset-password`)
 2. **AuthenticatedLayout** - Main app with sidebar navigation (`/home`, `/forms`, `/innovation`, `/profile`, `/settings`)
-3. **MindMappingLayout** - Specialized full-screen layout (`/brainstorming`)
 
 Route guards: `ProtectedRoute` and `GuestRoute` enforce authentication boundaries.
 
