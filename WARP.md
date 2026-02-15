@@ -36,6 +36,7 @@ pnpm knip             # Detect unused dependencies
 src/
 ├── app/routing/           # Router and routing helpers
 ├── features/              # Domain features (forms, navigation, innovation, etc.)
+├── assets/                # Static assets (css, svg)
 └── shared/                # Shared UI and utilities
 ```
 
@@ -66,7 +67,7 @@ Single application layout:
 ### Component Patterns
 
 - **Feature Organization**: Related components, types, and ViewModels grouped in feature directories
-- **UI Components**: Mix of shadcn/ui (`src/components/ui/`) and custom design components (`src/app/components/design/`)
+- **UI Components**: Shared UI lives in `src/shared/ui/` split into `design` and `primitives`
 - **Import Strategy**: Always use `@/` path aliases instead of relative paths
 - **Forwarding**: Consistent use of `React.forwardRef` for reusable components
 
@@ -79,11 +80,11 @@ Single application layout:
 
 ### Import Conventions
 - Use `@/` path aliases exclusively
-- Path mappings: `@/components`, `@/lib/utils`, `@/hooks`, etc.
+- Common mappings: `@/features/*`, `@/shared/*`, `@/app/routing/*`
 
 ### API Integration
 - Base URL from `VITE_API_URL` environment variable
-- All API calls should use the configured axios instance with automatic token injection
+- All API calls should use the configured axios instance in `src/shared/lib/apiClient.ts`
 - Follow the established pattern: async function + useQuery hook export
 
 ## Environment Configuration
@@ -101,4 +102,4 @@ Single application layout:
 - **New API Endpoints**: Must provide both the async function and the useQuery hook export
 - **Form Components**: Follow existing patterns in `FormTemplates/` feature directory
 - **Environment Access**: Use `import.meta.env` for Vite environment variables
-- **Component Styling**: Use `cn()` utility from `@/lib/utils` for class merging with Tailwind
+- **Component Styling**: Use `cn()` utility from `@/shared/lib/utils` for class merging with Tailwind

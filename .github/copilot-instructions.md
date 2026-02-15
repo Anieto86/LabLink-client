@@ -25,8 +25,8 @@ Uses React Router with a single app shell layout:
 
 ### Component Patterns
 
-- Mix of shadcn/ui components (`src/components/ui/`) and custom design components (`src/app/components/design/`)
-- Feature-based organization: `src/app/features/FormTemplates/` contains related components, types, and ViewModels
+- Shared UI components live in `src/shared/ui/` (`design` and `primitives`)
+- Feature-based organization: each domain has its own folder under `src/features/`
 - Consistent use of React.forwardRef for reusable components
 
 ## Development Workflow
@@ -52,7 +52,8 @@ pnpm format       # Code formatting with Biome
 ### API Communication
 
 - Base URL from `VITE_API_URL` environment variable
-- All API functions in `src/api/` return React Query hooks
+- API client is centralized in `src/shared/lib/apiClient.ts`
+- Feature APIs return React Query hooks from their own domain folders
 - Standard pattern: `const { data } = await api.get('/endpoint')` then wrap in useQuery
 
 ### Styling System
