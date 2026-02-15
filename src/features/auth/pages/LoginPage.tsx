@@ -8,8 +8,9 @@ import { Column } from '@/shared/ui/design/Grid'
 import { useAuthSession } from '@/features/auth/state/AuthSessionProvider'
 import type { ApiError } from '@/shared/lib/apiClient'
 
-const TEST_ADMIN_EMAIL = import.meta.env.VITE_TEST_ADMIN_EMAIL || ''
-const TEST_ADMIN_PASSWORD = import.meta.env.VITE_TEST_ADMIN_PASSWORD || ''
+const TEST_ADMIN_EMAIL = import.meta.env.TEST_ADMIN_EMAIL || ''
+const TEST_ADMIN_PASSWORD = import.meta.env.TEST_ADMIN_PASSWORD || ''
+const TEST_AUTH_BYPASS = String(import.meta.env.TEST_AUTH_BYPASS || '').toLowerCase() === 'true'
 
 const LoginPage = () => {
   const navigate = useNavigate()
@@ -51,9 +52,7 @@ const LoginPage = () => {
           <form className="space-y-4" onSubmit={handleSubmit}>
             {hasTestCredentials ? (
               <div className="rounded border border-blue-200 bg-blue-50 p-3 text-sm">
-                <p className="font-medium text-blue-800">Credenciales de test</p>
-                <p className="text-blue-700">Email: {TEST_ADMIN_EMAIL}</p>
-                <p className="text-blue-700">Password: {TEST_ADMIN_PASSWORD}</p>
+                {TEST_AUTH_BYPASS ? <p className="text-blue-700">Modo test local habilitado.</p> : null}
                 <Button
                   type="button"
                   variant="outline"

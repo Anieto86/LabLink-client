@@ -109,3 +109,6 @@ pids
 *.pid
 *.seed
 *.pid.lock
+
+# Local context docs
+PROJECT_CONTEXT.md

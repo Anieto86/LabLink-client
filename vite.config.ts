@@ -3,6 +3,7 @@ import path from 'path'
 import { defineConfig } from 'vite'
 
 export default defineConfig({
+  envPrefix: ['VITE_', 'TEST_'],
   plugins: [react()],
   resolve: {
     alias: {

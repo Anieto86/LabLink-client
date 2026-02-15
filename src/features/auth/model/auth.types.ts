@@ -6,6 +6,14 @@ export interface LoginRequest {
 export interface LoginResponse {
   access_token?: string
   token?: string
+  accessToken?: string
+  jwt?: string
+  data?: {
+    token?: string
+    access_token?: string
+    accessToken?: string
+    jwt?: string
+  }
 }
 
 export interface UserMe {
@@ -14,3 +22,9 @@ export interface UserMe {
   name?: string
 }
 
+export type UserMeResponse =
+  | UserMe
+  | {
+      user?: UserMe
+      data?: UserMe
+    }
