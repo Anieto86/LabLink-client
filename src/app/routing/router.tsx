@@ -14,9 +14,11 @@ const AuthenticatedLayout = lazy(() =>
 export const router = createBrowserRouter(
   createRoutesFromElements(
     <Route>
+      {/* Infra: ruta publica (no requiere sesion). */}
       <Route path="/login" element={<LoginPage />} />
       <Route
         element={
+          // Infra: todas las rutas hijas quedan protegidas por el guard de auth.
           <ProtectedRoute>
             <Suspense fallback={<LoadingFallback />}>
               <AuthenticatedLayout />

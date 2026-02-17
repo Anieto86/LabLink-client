@@ -393,6 +393,7 @@ const mockAdapter = async (config: InternalAxiosRequestConfig) => {
 
 const apiClient = axios.create({
   baseURL: API_URL,
+  // Infra: mock adapter para entorno local; en integracion real usa red normal.
   adapter: TEST_MOCK_API ? mockAdapter : undefined,
   headers: {
     'Content-Type': 'application/json'
@@ -400,6 +401,7 @@ const apiClient = axios.create({
 })
 
 apiClient.interceptors.request.use((config) => {
+  // Infra Step 5.1: inserta Bearer token de forma centralizada en cada request.
   const token = localStorage.getItem(AUTH_TOKEN_KEY)
   if (token) {
     config.headers = config.headers || {}
@@ -412,6 +414,7 @@ apiClient.interceptors.response.use(
   (response) => response,
   (error: AxiosError) => {
     const normalizedError = normalizeApiError(error)
+    // Infra Step 5.2: si backend responde 401, delega cierre de sesion al provider.
     if (normalizedError.code === 'UNAUTHORIZED' && unauthorizedHandler) {
       unauthorizedHandler()
     }

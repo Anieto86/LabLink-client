@@ -27,6 +27,7 @@ const extractToken = (response: Awaited<ReturnType<typeof loginRequest>>) => {
 }
 
 export const AuthSessionProvider = ({ children }: { children: ReactNode }) => {
+  // Infra Step 2: estado central de sesion (token + user) para toda la aplicacion.
   const [token, setToken] = useState<string | null>(() => localStorage.getItem(TOKEN_KEY))
   const [user, setUser] = useState<UserMe | null>(() => {
     const raw = localStorage.getItem(DEMO_USER_KEY)
@@ -47,6 +48,7 @@ export const AuthSessionProvider = ({ children }: { children: ReactNode }) => {
   }, [])
 
   const bootstrapSession = useCallback(async () => {
+    // Infra Step 2.1: rehidrata token desde storage y valida contra /user/me.
     const currentToken = localStorage.getItem(TOKEN_KEY)
     if (!currentToken) {
       setIsBootstrapping(false)
@@ -71,6 +73,7 @@ export const AuthSessionProvider = ({ children }: { children: ReactNode }) => {
 
   const login = useCallback(async (payload: LoginRequest) => {
     try {
+      // Infra Step 2.2: login obtiene token, lo persiste y luego consulta perfil (/user/me).
       const response = await loginRequest(payload)
       const nextToken = extractToken(response)
       if (!nextToken) {
@@ -111,6 +114,7 @@ export const AuthSessionProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     void bootstrapSession()
+    // Infra Step 5: conecta capa HTTP con capa sesion para cerrar sesion en 401.
     setUnauthorizedHandler(logout)
     return () => setUnauthorizedHandler(null)
   }, [bootstrapSession, logout])

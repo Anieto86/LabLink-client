@@ -4,6 +4,7 @@ import type { ApiError } from '@/shared/lib/apiClient'
 
 export const loginRequest = async (payload: LoginRequest) => {
   try {
+    // Infra Contract: endpoint de inicio de sesion.
     const { data } = await apiClient.post<LoginResponse>('/auth/login', payload)
     return data
   } catch (error) {
@@ -25,6 +26,7 @@ export const loginRequest = async (payload: LoginRequest) => {
 }
 
 export const getMeRequest = async () => {
+  // Infra Contract: endpoint para validar token y recuperar identidad actual.
   const { data } = await apiClient.get<UserMeResponse>('/user/me')
   if ('id' in data && 'email' in data) {
     return data as UserMe

@@ -12,6 +12,7 @@ function App() {
         location.reload()
       }}
     >
+      {/* Infra Step 1: session provider envuelve todo el router para exponer auth global. */}
       <AuthSessionProvider>
         <RouterProvider router={router} />
       </AuthSessionProvider>
