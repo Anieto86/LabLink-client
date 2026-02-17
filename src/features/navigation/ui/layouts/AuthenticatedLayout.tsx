@@ -1,8 +1,8 @@
 import { Outlet } from 'react-router-dom'
 import { Suspense, useState } from 'react'
-import Navbar from '@/features/navigation/components/Navbar'
-import Sidebar from '@/features/navigation/components/Sidebar'
-import '@/features/navigation/styles/Dashboard.css'
+import Navbar from '@/features/navigation/ui/components/Navbar'
+import Sidebar from '@/features/navigation/ui/components/Sidebar'
+import '@/features/navigation/ui/styles/Dashboard.css'
 
 const AuthenticatedLayout = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false)

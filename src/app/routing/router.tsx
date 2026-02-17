@@ -2,12 +2,14 @@ import { createBrowserRouter, createRoutesFromElements, Route, Navigate } from '
 import { lazy, Suspense } from 'react'
 import { LoadingFallback } from '@/app/routing/helpers'
 import { ProtectedRoute } from '@/features/auth/routing/ProtectedRoute'
-import LoginPage from '@/features/auth/pages/LoginPage'
-import LaboratoriesPage from '@/features/laboratories/pages/LaboratoriesPage'
-import ResourcesPage from '@/features/resources/pages/ResourcesPage'
-import ReservationsPage from '@/features/reservations/pages/ReservationsPage'
+import { LoginPage } from '@/features/auth'
+import { LaboratoriesPage } from '@/features/laboratories'
+import { ResourcesPage } from '@/features/resources'
+import { ReservationsPage } from '@/features/reservations'
 
-const AuthenticatedLayout = lazy(() => import('@/features/navigation/layouts/AuthenticatedLayout'))
+const AuthenticatedLayout = lazy(() =>
+  import('@/features/navigation').then((module) => ({ default: module.AuthenticatedLayout }))
+)
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
