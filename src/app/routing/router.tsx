@@ -6,6 +6,7 @@ import { LoginPage } from '@/features/auth'
 import { LaboratoriesPage } from '@/features/laboratories'
 import { ResourcesPage } from '@/features/resources'
 import { ReservationsPage } from '@/features/reservations'
+import { ReactHooksLabPage } from '@/features/reactStudy'
 
 const AuthenticatedLayout = lazy(() =>
   import('@/features/navigation').then((module) => ({ default: module.AuthenticatedLayout }))
@@ -29,6 +30,7 @@ export const router = createBrowserRouter(
         <Route path="/laboratories" element={<LaboratoriesPage />} />
         <Route path="/resources" element={<ResourcesPage />} />
         <Route path="/reservations" element={<ReservationsPage />} />
+        <Route path="/react-hooks-lab" element={<ReactHooksLabPage />} />
       </Route>
 
       <Route path="/" element={<Navigate to="/laboratories" replace />} />

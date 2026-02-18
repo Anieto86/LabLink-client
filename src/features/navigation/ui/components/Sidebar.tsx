@@ -1,10 +1,11 @@
 import { Link } from 'react-router-dom'
-import { HiBeaker, HiCalendar, HiCube } from 'react-icons/hi'
+import { HiBeaker, HiCalendar, HiCube, HiLightBulb } from 'react-icons/hi'
 
 const sidebarContent = [
   { text: 'Laboratories', link: '/laboratories', icon: <HiBeaker className="w-5 h-5" /> },
   { text: 'Resources', link: '/resources', icon: <HiCube className="w-5 h-5" /> },
-  { text: 'Reservations', link: '/reservations', icon: <HiCalendar className="w-5 h-5" /> }
+  { text: 'Reservations', link: '/reservations', icon: <HiCalendar className="w-5 h-5" /> },
+  { text: 'React Hooks Lab', link: '/react-hooks-lab', icon: <HiLightBulb className="w-5 h-5" /> }
 ]
 
 const Sidebar = () => {
