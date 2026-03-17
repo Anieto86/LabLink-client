@@ -10,6 +10,5 @@
 - [ ] `api/model/ui` boundaries preserved.
 
 ## Verification
-- [ ] `npm run test`
-- [ ] `npm run lint`
-
+- [ ] `pnpm test`
+- [ ] `pnpm lint`

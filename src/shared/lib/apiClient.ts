@@ -1,4 +1,9 @@
-import axios, { type AxiosError, type AxiosResponse, type InternalAxiosRequestConfig } from 'axios'
+import axios, {
+  type AxiosAdapter,
+  type AxiosError,
+  type AxiosResponse,
+  type InternalAxiosRequestConfig
+} from 'axios'
 
 export type ApiErrorCode = 'UNAUTHORIZED' | 'CONFLICT' | 'NOT_FOUND' | 'VALIDATION_ERROR' | 'UNKNOWN'
 
@@ -164,6 +169,19 @@ const fail = (config: InternalAxiosRequestConfig, status: number, message: strin
   throw error
 }
 
+const requireValue = <T>(
+  value: T | null | undefined,
+  config: InternalAxiosRequestConfig,
+  status: number,
+  message: string
+): T => {
+  if (value == null) {
+    fail(config, status, message)
+  }
+
+  return value as T
+}
+
 const getBearerToken = (config: InternalAxiosRequestConfig) => {
   const headers = config.headers as Record<string, unknown> | undefined
   const authHeader = (headers?.Authorization || headers?.authorization) as string | undefined
@@ -176,18 +194,19 @@ const isValidTime = (value: string) => /^\d{2}:\d{2}:\d{2}$/.test(value)
 const overlaps = (aStart: string, aEnd: string, bStart: string, bEnd: string) => aStart < bEnd && aEnd > bStart
 
 const requireUser = (config: InternalAxiosRequestConfig): MockUser => {
-  const token = getBearerToken(config)
-  if (!token) fail(config, 401, 'Missing bearer token')
-  const userId = mockState.tokens[token]
-  if (!userId) fail(config, 401, 'Invalid session')
-  const user = mockState.users.find((item) => item.id === userId)
-  if (!user) fail(config, 401, 'Invalid session')
-  return user
+  const token = requireValue(getBearerToken(config), config, 401, 'Missing bearer token')
+  const userId = requireValue(mockState.tokens[token], config, 401, 'Invalid session')
+  return requireValue(
+    mockState.users.find((item) => item.id === userId),
+    config,
+    401,
+    'Invalid session'
+  )
 }
 
 const nextId = (prefix: string) => `${prefix}-${Math.random().toString(36).slice(2, 10)}`
 
-const mockAdapter = async (config: InternalAxiosRequestConfig) => {
+const mockAdapter: AxiosAdapter = async (config): Promise<AxiosResponse> => {
   const method = (config.method || 'get').toLowerCase()
   const path = normalizePath(config.url)
   const body = readBody(config)
@@ -195,8 +214,12 @@ const mockAdapter = async (config: InternalAxiosRequestConfig) => {
   if (method === 'post' && path === '/auth/login') {
     const email = String(body.email || body.username || '')
     const password = String(body.password || '')
-    const user = mockState.users.find((item) => item.email === email && item.password === password)
-    if (!user) fail(config, 401, 'Invalid credentials')
+    const user = requireValue(
+      mockState.users.find((item) => item.email === email && item.password === password),
+      config,
+      401,
+      'Invalid credentials'
+    )
 
     const token = `mock-token-${user.id}`
     mockState.tokens[token] = user.id
@@ -245,8 +268,12 @@ const mockAdapter = async (config: InternalAxiosRequestConfig) => {
   }
   if (path.startsWith('/laboratories/')) {
     const id = path.replace('/laboratories/', '')
-    const item = mockState.laboratories.find((entry) => entry.id === id)
-    if (!item) fail(config, 404, 'Laboratory not found')
+    const item = requireValue(
+      mockState.laboratories.find((entry) => entry.id === id),
+      config,
+      404,
+      'Laboratory not found'
+    )
     if (method === 'get') return response(config, 200, item)
     if (method === 'patch') {
       item.name = String(body.name || item.name)
@@ -280,8 +307,12 @@ const mockAdapter = async (config: InternalAxiosRequestConfig) => {
   }
   if (path.startsWith('/resources/')) {
     const id = path.replace('/resources/', '')
-    const item = mockState.resources.find((entry) => entry.id === id)
-    if (!item) fail(config, 404, 'Resource not found')
+    const item = requireValue(
+      mockState.resources.find((entry) => entry.id === id),
+      config,
+      404,
+      'Resource not found'
+    )
     if (method === 'get') return response(config, 200, item)
     if (method === 'patch') {
       item.name = String(body.name || item.name)
@@ -347,8 +378,12 @@ const mockAdapter = async (config: InternalAxiosRequestConfig) => {
 
   if (path.startsWith('/reservations/') && !path.startsWith('/reservations/user/')) {
     const id = path.replace('/reservations/', '')
-    const item = mockState.reservations.find((entry) => entry.id === id)
-    if (!item) fail(config, 404, 'Reservation not found')
+    const item = requireValue(
+      mockState.reservations.find((entry) => entry.id === id),
+      config,
+      404,
+      'Reservation not found'
+    )
 
     if (method === 'get') return response(config, 200, item)
     if (method === 'patch') {
@@ -388,7 +423,7 @@ const mockAdapter = async (config: InternalAxiosRequestConfig) => {
     }
   }
 
-  fail(config, 404, `Mock route not found: ${method.toUpperCase()} ${path}`)
+  return fail(config, 404, `Mock route not found: ${method.toUpperCase()} ${path}`)
 }
 
 const apiClient = axios.create({

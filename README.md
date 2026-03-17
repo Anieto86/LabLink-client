@@ -117,6 +117,7 @@ Run the following before opening a PR:
 
 ```sh
 pnpm tsc
+pnpm build
 pnpm lint
-pnpm format
+pnpm test
 ```

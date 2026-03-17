@@ -10,7 +10,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "preview": "vite preview",
-    "tsc": "npx --node-options=\"--max-old-space-size=8000\" tsc --noEmit",
+    "tsc": "tsc -b",
     "knip": "knip",
     "biome": "biome lint --diagnostic-level=error",
     "format": "biome format --write ."
